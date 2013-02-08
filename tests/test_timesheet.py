@@ -1,6 +1,6 @@
 import unittest
 
-from datetime import datetime
+from datetime import datetime, time, date
 from timesheet import Timesheet
 
 class GivenNewTimesheet(unittest.TestCase):
@@ -42,6 +42,20 @@ class GivenNewTimesheet(unittest.TestCase):
     
     def test_adding_time_with_good_start_good_end_should_not_error(self):
         self.timesheet.add_time("12:00 AM", "3:33 AM")
+
+
+    def test_adding_start_time_by_object_should_not_error(self):
+        t = time(0, 0)
+        self.timesheet.add_time(t)
+
+
+    def test_adding_end_time_by_object_should_not_error(self):
+        t = time(13, 13)
+        self.timesheet.add_time("12:00 AM", t)
+
+
+    def test_adding_date_by_object_should_not_error(self):
+        self.timesheet.add_time("12:44 PM", date=datetime.today())
 
 
     def test_adding_time_with_good_start_end_and_any_task_should_not_error(self):
@@ -93,9 +107,9 @@ class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
 
 class GivenTimesheetWithOneFullyLoadedTask(unittest.TestCase):
     def setUp(self):
-        self.start_time = "1:44 AM"
-        self.end_time = "9:08 PM"
-        self.date = "2010-08-14"
+        self.start_time = time(1, 44)
+        self.end_time = time(21, 8)
+        self.date = date(2010, 8 ,14)
         self.project  = "Silly Project"
         self.task = "Put on some pants"
 
@@ -105,17 +119,32 @@ class GivenTimesheetWithOneFullyLoadedTask(unittest.TestCase):
                                 proj=self.project,
                                 task=self.task,
                                 date=self.date)
+        self.sheet_task = self.timesheet.tasks[-1]
 
 
     def test_it_should_use_provided_project(self):
         self.assertEqual(self.project,
-                         self.timesheet.tasks[-1].project)
+                         self.project)
 
 
     def test_it_should_use_provided_task(self):
         self.assertEqual(self.task,
-                         self.timesheet.tasks[-1].task)
+                         self.sheet_task.task)
 
+
+    def test_it_should_use_provided_start(self):
+        self.assertEqual(self.start_time,
+                         self.sheet_task.start)
+
+
+    def test_it_should_use_provided_end(self):
+        self.assertEqual(self.end_time,
+                         self.sheet_task.end)
+
+
+    def test_it_should_use_provided_date(self):
+        self.assertEqual(self.date,
+                         self.sheet_task.date)
 
 
 class GivenTimesheetWithOpenInterval(unittest.TestCase):
