@@ -1,10 +1,13 @@
 import datetime
 
 class Task(object):
-    def __init__(self, start, end, date):
+    def __init__(self, start, end, date, project, task):
         self.start = start
         self.end = end
         self.date = date
+        self.project = project
+        self.task = task
+
 
 class Timesheet(object):
     def __init__(self):
@@ -22,7 +25,7 @@ class Timesheet(object):
         else:
             date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
 
-        task = Task(start, end, date)
+        task = Task(start, end, date, proj, task)
         self.tasks.append(task)
 
 

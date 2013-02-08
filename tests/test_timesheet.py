@@ -79,8 +79,43 @@ class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
                          self.timesheet.tasks[-1].date)
 
 
+    def test_the_project_should_be_None_by_default(self):
+        self.assertIsNone(self.timesheet.tasks[-1].project)
+
+
+    def test_the_task_should_be_None_by_default(self):
+        self.assertIsNone(self.timesheet.tasks[-1].task)
+
+
     def test_current_task_should_be_None(self):
         self.assertIsNone(self.timesheet.current_task)
+
+
+class GivenTimesheetWithOneFullyLoadedTask(unittest.TestCase):
+    def setUp(self):
+        self.start_time = "1:44 AM"
+        self.end_time = "9:08 PM"
+        self.date = "2010-08-14"
+        self.project  = "Silly Project"
+        self.task = "Put on some pants"
+
+        self.timesheet = Timesheet()
+        self.timesheet.add_time(self.start_time,
+                                self.end_time,
+                                proj=self.project,
+                                task=self.task,
+                                date=self.date)
+
+
+    def test_it_should_use_provided_project(self):
+        self.assertEqual(self.project,
+                         self.timesheet.tasks[-1].project)
+
+
+    def test_it_should_use_provided_task(self):
+        self.assertEqual(self.task,
+                         self.timesheet.tasks[-1].task)
+
 
 
 class GivenTimesheetWithOpenInterval(unittest.TestCase):
