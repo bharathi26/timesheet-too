@@ -85,3 +85,22 @@ good time ;)
 
     Sleep: 6h 45m
 
+
+**Another example:**
+    
+    timesheet = Timesheet()
+    # Add a bunch of time
+
+    start = datetime(2010, 8, 14)
+    end = datetime(2010, 8, 15)
+    for project in timesheet.time_spent(start=start, end=end, type='projects'):
+        print("Project: {0}\nTime Spent: {1}".format(project.name,
+                                                     project.time_spent))
+
+
+    # Output:
+    Project: Sleep
+    Time Spent: 3h 42m
+
+    Project: Cool Thing
+    Time Spent: 42h
