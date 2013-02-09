@@ -1,6 +1,6 @@
 import datetime
 
-class Task(object):
+class Interval(object):
     def __init__(self, start, end, date, project, task):
         self.start = start
         self.end = end
@@ -61,7 +61,7 @@ class Timesheet(object):
             except AttributeError:
                 date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
 
-        task = Task(start, end, date, proj, task)
+        task = Interval(start, end, date, proj, task)
         self.tasks.append(task)
 
 
