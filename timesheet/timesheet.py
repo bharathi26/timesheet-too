@@ -41,6 +41,11 @@ class Timesheet(object):
             # Maybe it's a string?
             start = datetime.datetime.strptime(start, "%I:%M %p")
 
+
+        _task = self.current_task
+        if _task is not None:
+            _task.end = datetime.datetime.today().time()
+
         if end is not None:
             try:
                 end = datetime.time(end.hour, end.minute)

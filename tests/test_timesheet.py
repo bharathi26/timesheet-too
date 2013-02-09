@@ -162,3 +162,18 @@ class GivenTimesheetWithOpenInterval(unittest.TestCase):
         self.assertEqual(self.start_time,
                          self.timesheet.current_task.start.strftime('%I:%M %p'))
 
+
+    def test_adding_task_should_close_interval(self):
+        task = self.timesheet.current_task
+        self.timesheet.add_time("4:34 PM")
+
+        now = datetime.today().time()
+        self.assertEqual(now.hour,
+                         task.end.hour)
+        self.assertEqual(now.minute,
+                         task.end.minute)
+        self.assertEqual(now.second,
+                         task.end.second)
+        self.assertAlmostEqual(now.microsecond,
+                               task.end.microsecond, places=-3)
+
