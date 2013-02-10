@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import unittest
 
-from datetime import datetime
+from datetime import datetime, time, date
 from timesheet import Timesheet
 
 class GivenNewTimesheet(unittest.TestCase):
@@ -45,6 +45,20 @@ class GivenNewTimesheet(unittest.TestCase):
         self.timesheet.add_time("12:00 AM", "3:33 AM")
 
 
+    def test_adding_start_time_by_object_should_not_error(self):
+        t = time(0, 0)
+        self.timesheet.add_time(t)
+
+
+    def test_adding_end_time_by_object_should_not_error(self):
+        t = time(13, 13)
+        self.timesheet.add_time("12:00 AM", t)
+
+
+    def test_adding_date_by_object_should_not_error(self):
+        self.timesheet.add_time("12:44 PM", date=datetime.today())
+
+
     def test_adding_time_with_good_start_end_and_any_task_should_not_error(self):
         self.timesheet.add_time("12:00 AM", "4:44 PM", "fnord")
 
@@ -80,8 +94,58 @@ class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
                          self.timesheet.tasks[-1].date)
 
 
+    def test_the_project_should_be_None_by_default(self):
+        self.assertIsNone(self.timesheet.tasks[-1].project)
+
+
+    def test_the_task_should_be_None_by_default(self):
+        self.assertIsNone(self.timesheet.tasks[-1].task)
+
+
     def test_current_task_should_be_None(self):
         self.assertIsNone(self.timesheet.current_task)
+
+
+class GivenTimesheetWithOneFullyLoadedTask(unittest.TestCase):
+    def setUp(self):
+        self.start_time = time(1, 44)
+        self.end_time = time(21, 8)
+        self.date = date(2010, 8 ,14)
+        self.project  = "Silly Project"
+        self.task = "Put on some pants"
+
+        self.timesheet = Timesheet()
+        self.timesheet.add_time(self.start_time,
+                                self.end_time,
+                                proj=self.project,
+                                task=self.task,
+                                date=self.date)
+        self.sheet_task = self.timesheet.tasks[-1]
+
+
+    def test_it_should_use_provided_project(self):
+        self.assertEqual(self.project,
+                         self.project)
+
+
+    def test_it_should_use_provided_task(self):
+        self.assertEqual(self.task,
+                         self.sheet_task.task)
+
+
+    def test_it_should_use_provided_start(self):
+        self.assertEqual(self.start_time,
+                         self.sheet_task.start)
+
+
+    def test_it_should_use_provided_end(self):
+        self.assertEqual(self.end_time,
+                         self.sheet_task.end)
+
+
+    def test_it_should_use_provided_date(self):
+        self.assertEqual(self.date,
+                         self.sheet_task.date)
 
 
 class GivenTimesheetWithOpenInterval(unittest.TestCase):
@@ -98,4 +162,19 @@ class GivenTimesheetWithOpenInterval(unittest.TestCase):
     def test_current_task_should_have_correct_start_time(self):
         self.assertEqual(self.start_time,
                          self.timesheet.current_task.start.strftime('%I:%M %p'))
+
+
+    def test_adding_task_should_close_interval(self):
+        task = self.timesheet.current_task
+        self.timesheet.add_time("4:34 PM")
+
+        now = datetime.today().time()
+        self.assertEqual(now.hour,
+                         task.end.hour)
+        self.assertEqual(now.minute,
+                         task.end.minute)
+        self.assertEqual(now.second,
+                         task.end.second)
+        self.assertAlmostEqual(now.microsecond,
+                               task.end.microsecond, places=-3)
 
