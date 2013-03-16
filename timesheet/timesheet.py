@@ -39,7 +39,7 @@ class Timesheet(object):
             start = datetime.time(start.hour, start.minute)
         except AttributeError:
             # Maybe it's a string?
-            start = datetime.datetime.strptime(start, "%I:%M %p")
+            start = datetime.datetime.strptime(start, "%I:%M %p").time()
 
 
         _task = self.current_task
@@ -51,7 +51,7 @@ class Timesheet(object):
                 end = datetime.time(end.hour, end.minute)
             except AttributeError:
                 # Maybe it's a string?
-                end = datetime.datetime.strptime(end, "%I:%M %p")
+                end = datetime.datetime.strptime(end, "%I:%M %p").time()
 
         if date is None:
             date = datetime.date.today()
@@ -68,7 +68,10 @@ class Timesheet(object):
 
 
     def _find_intervals(self, start, end):
-        return self.intervals[-1] if self.intervals else None
+        for interval in self.intervals:
+            if end and start < interval.end <= end:
+                return [self.intervals[-1]]
+        return [] 
 
 
     @property

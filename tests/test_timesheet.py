@@ -84,15 +84,17 @@ class GivenNewTimesheet(unittest.TestCase):
                                 "2010-08-14")
 
 
-    def test_find_intervals_should_return_None(self):
-        self.assertIsNone(self.timesheet._find_intervals(time(10, 10),
-                                                         time(2, 20)))
+    def test_find_intervals_should_return_empty_list(self):
+        self.assertEqual([],self.timesheet._find_intervals(time(10, 10),
+                                                           time(2, 20)))
 
 
 class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
     def setUp(self):
         self.timesheet = Timesheet()
-        self.timesheet.add_interval("10:45 AM", "11:00 AM")
+        self.start_time = time(10, 45)
+        self.end_time = time(11, 00)
+        self.timesheet.add_interval(self.start_time, self.end_time)
 
 
     def test_it_should_use_current_date_as_default(self):
@@ -128,11 +130,14 @@ class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
 
         self.assertEqual(interval,
                          self.timesheet._find_intervals(time(0, 0),
-                                                        interval.end))
+                                                        interval.end)[0])
 
 
     def test_find_intervals_with_time_outside_interval_should_fail(self):
-        self.skipTest('Yerp')
+        bad_start = self.start_time.replace(hour=self.start_time.hour - 2)
+        bad_end = self.start_time.replace(hour=self.start_time.hour - 1)
+        self.assertEqual([], self.timesheet._find_intervals(bad_start,
+                                                            bad_end))
 
 
 class GivenTimesheetWithOneFullyLoadedTask(unittest.TestCase):
