@@ -11,7 +11,7 @@ class Interval(object):
 
 class Timesheet(object):
     def __init__(self):
-        self.tasks = []
+        self.intervals = []
 
     def time_spent(self):
         return 0
@@ -62,12 +62,12 @@ class Timesheet(object):
                 date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
 
         task = Interval(start, end, date, proj, task)
-        self.tasks.append(task)
+        self.intervals.append(task)
 
 
     @property
     def current_task(self):
-        for task in self.tasks:
+        for task in self.intervals:
             if task.end is None:
                 return task
         

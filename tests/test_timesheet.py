@@ -92,20 +92,30 @@ class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
 
     def test_it_should_use_current_date_as_default(self):
         self.assertEqual(datetime.today().date(),
-                         self.timesheet.tasks[-1].date)
+                         self.timesheet.intervals[-1].date)
 
 
     def test_the_project_should_be_None_by_default(self):
-        self.assertIsNone(self.timesheet.tasks[-1].project)
+        self.assertIsNone(self.timesheet.intervals[-1].project)
 
 
     def test_the_task_should_be_None_by_default(self):
-        self.assertIsNone(self.timesheet.tasks[-1].task)
+        self.assertIsNone(self.timesheet.intervals[-1].task)
 
 
     def test_current_task_should_be_None(self):
         self.assertIsNone(self.timesheet.current_task)
 
+
+    def test_adding_task_with_same_start_and_end_should_return_current_interval(self):
+        self.skipTest('foo')
+        current_task = self.timesheet.intervals[-1]
+
+        task = self.timesheet.add_interval(current_task.start,
+                                           current_task.end,
+                                           task="New task")
+
+        self.assertEqual(current_task, task)
 
 
 class GivenTimesheetWithOneFullyLoadedTask(unittest.TestCase):
@@ -122,7 +132,7 @@ class GivenTimesheetWithOneFullyLoadedTask(unittest.TestCase):
                                 proj=self.project,
                                 task=self.task,
                                 date=self.date)
-        self.sheet_task = self.timesheet.tasks[-1]
+        self.sheet_task = self.timesheet.intervals[-1]
 
 
     def test_it_should_use_provided_project(self):
