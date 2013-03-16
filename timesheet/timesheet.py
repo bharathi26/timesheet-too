@@ -16,9 +16,9 @@ class Timesheet(object):
     def time_spent(self):
         return 0
 
-    def add_time(self, start, end=None, task=None, proj=None, date=None):
-        ''' Add time to the timesheet. If the interval overlaps any other
-            interval, raise ValueError unless force = True.
+    def add_interval(self, start, end=None, task=None, proj=None, date=None):
+        ''' Add interval to the timesheet. If the interval overlaps any other,
+        overwrite the previous interval(s) and return them.
 
             start - Start time, either HH:MM AM (or PM), or object with 
                     .hour and .minute properties.
