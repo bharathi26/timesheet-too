@@ -62,7 +62,13 @@ class Timesheet(object):
                 date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
 
         task = Interval(start, end, date, proj, task)
+
+        conflicts = self._find_intervals(start, end)
         self.intervals.append(task)
+
+
+    def _find_intervals(self, start, end):
+        return self.intervals[-1] if self.intervals else None
 
 
     @property

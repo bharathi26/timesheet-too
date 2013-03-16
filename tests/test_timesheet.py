@@ -84,6 +84,11 @@ class GivenNewTimesheet(unittest.TestCase):
                                 "2010-08-14")
 
 
+    def test_find_intervals_should_return_None(self):
+        self.assertIsNone(self.timesheet._find_intervals(time(10, 10),
+                                                         time(2, 20)))
+
+
 class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
     def setUp(self):
         self.timesheet = Timesheet()
@@ -108,7 +113,7 @@ class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
 
 
     def test_adding_task_with_same_start_and_end_should_return_current_interval(self):
-        self.skipTest('foo')
+        self.skipTest("come  back here")
         current_task = self.timesheet.intervals[-1]
 
         task = self.timesheet.add_interval(current_task.start,
@@ -116,6 +121,18 @@ class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
                                            task="New task")
 
         self.assertEqual(current_task, task)
+
+
+    def test_find_intervals_with_early_start_but_matching_end_should_return_it(self):
+        interval = self.timesheet.intervals[-1]
+
+        self.assertEqual(interval,
+                         self.timesheet._find_intervals(time(0, 0),
+                                                        interval.end))
+
+
+    def test_find_intervals_with_time_outside_interval_should_fail(self):
+        self.skipTest('Yerp')
 
 
 class GivenTimesheetWithOneFullyLoadedTask(unittest.TestCase):
