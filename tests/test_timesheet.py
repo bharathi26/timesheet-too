@@ -93,7 +93,7 @@ class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
     def setUp(self):
         self.timesheet = Timesheet()
         self.start_time = time(10, 45)
-        self.end_time = time(11, 00)
+        self.end_time = time(14, 00)
         self.timesheet.add_interval(self.start_time, self.end_time)
 
 
@@ -138,6 +138,14 @@ class GivenTimesheetWithOneTaskWithStartAndEnd(unittest.TestCase):
         bad_end = self.start_time.replace(hour=self.start_time.hour - 1)
         self.assertEqual([], self.timesheet._find_intervals(bad_start,
                                                             bad_end))
+
+
+    def test_find_intervals_with_early_end_but_matching_start_should_return_it(self):
+        interval = self.timesheet.intervals[-1]
+
+        self.assertEqual(interval,
+                 self.timesheet._find_intervals(interval.start,
+                            interval.end.replace(hour=interval.end.hour-1))[0])
 
 
 class GivenTimesheetWithOneFullyLoadedTask(unittest.TestCase):

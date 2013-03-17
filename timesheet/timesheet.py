@@ -71,6 +71,8 @@ class Timesheet(object):
         for interval in self.intervals:
             if end and start < interval.end <= end:
                 return [self.intervals[-1]]
+            elif start and start <= interval.start < end:
+                return [self.intervals[-1]]
         return [] 
 
 
