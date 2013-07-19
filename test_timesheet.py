@@ -59,9 +59,9 @@ def test_if_end_not_provided_time_spent_should_return_now_minus_start():
 
     spent = i.time_spent
     also_spent = datetime.datetime.now() - start
-    diff = also_spent - spent
+    diff = also_spent.total_seconds()/60/60 - spent
 
-    assert abs(diff.microseconds) < 100 # Within .0001 seconds
+    assert abs(diff) < .001 # Within .0001 seconds
 
 
 def test_if_end_provided_time_spent_should_equal_end_minus_start():
@@ -69,7 +69,7 @@ def test_if_end_provided_time_spent_should_equal_end_minus_start():
     end = datetime.datetime.now()
     i = Interval(3, start, end)
 
-    assert i.time_spent == end-start
+    assert i.time_spent == (end-start).total_seconds()/60/60
 
 
 #Task tests
@@ -293,3 +293,23 @@ def test_add_work_should_add_interval_to_timesheet_intervals(timesheet):
     assert timesheet.intervals[0].task_id == task_id
     assert timesheet.intervals[0].start == start
     assert timesheet.intervals[0].end == end
+
+
+def test_stop_work_should_set_end_time_on_current_task_to_now(timesheet):
+    task_id = timesheet.new_task()
+    timesheet.start_work(task_id)
+    interval = timesheet.intervals[-1]
+    time.sleep(0.1)
+    timesheet.stop_work()
+    diff = datetime.datetime.now() - interval.end
+
+    assert abs(diff.microseconds) < 100 # Within .0001 seconds
+
+
+def test_start_work_should_add_new_interval_with_start_of_now(timesheet):
+    task_id = timesheet.new_task()
+    timesheet.start_work(task_id)
+    interval = timesheet.intervals[-1]
+    diff = datetime.datetime.now() - interval.start
+
+    assert abs(diff.microseconds) < 100 # Within .0001 seconds

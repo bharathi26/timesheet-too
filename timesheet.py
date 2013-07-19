@@ -1,4 +1,5 @@
 import datetime
+from clint.textui import colored
 
 class Timesheet:
     def __init__(self):
@@ -8,9 +9,34 @@ class Timesheet:
         self._current_task = None
 
 
+    def __repr__(self):
+
+        return ("Timesheet:\n"
+                "  # of projects: {:3>}\n"
+                "  # of tasks:    {:3>}\n"
+                "  Total hours:   {:.2f}\n"
+               ).format(len(self.projects),
+                        len(self.tasks),
+                        sum(i.time_spent for i in self.intervals))
+
+
     @property
     def current_task(self):
+        if self._current_task is None:
+            interval = self.current_interval
+            if interval is None:
+                return None
+            else:
+                self._current_task = self.get_task(interval.task_id)
         return self._current_task
+
+
+    @property
+    def current_interval(self):
+        for i in self.intervals:
+            if i.end == None:
+                return i
+        return None
 
 
     def new_project(self, proj_id, title=None, desc=None):
@@ -60,9 +86,15 @@ class Timesheet:
         if task is None:
             raise ValueError("No task present with id '{}'".format(task_id))
         self._current_task = task
+        self.intervals.append(Interval(self.current_task.id,
+                                       datetime.datetime.now()))
 
 
     def stop_work(self):
+        interval = self.current_interval
+        if interval is None:
+            raise ValueError("No current interval")
+        interval.end = datetime.datetime.now()
         self._current_task = None
 
 
@@ -71,6 +103,16 @@ class Project:
         self.id = id
         self.title = title
         self.desc = desc
+
+
+    def __repr__(self):
+        return "<Project {} - {}>".format(
+                    colored.cyan("{:<8}".format(self.id)),
+                    self.title)
+
+
+    def __lt__(self, other):
+        return self.id < other.id
 
 
 class Task:
@@ -87,6 +129,20 @@ class Task:
     def id(self):
         return self._id
 
+
+    def __repr__(self):
+        return ("Task:\n"
+                "  ID: {}\n"
+                "  Project: {}\n"
+                "  Type: {}\n"
+                "  Title: {}\n"
+                "  Assigned To: {}\n"
+                "  Reported By: {}\n").format(self.id,
+                                              self.proj_id,
+                                              self.type,
+                                              self.title,
+                                              self.owner,
+                                              self.reporter,)
 
 class Note:
     def __init__(self, task_id, tstamp, text):
@@ -112,5 +168,5 @@ class Interval:
         else:
             end = self.end
 
-        return end - self.start
+        return (end - self.start).total_seconds()/60/60
 
