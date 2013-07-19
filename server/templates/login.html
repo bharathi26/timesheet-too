@@ -1,0 +1,5 @@
+{% extends 'base.html' %} 
+
+{{ form.csrf_token }}
+{{ form.username.label }}{{ form.username(size=20) }}<br />
+{{ form.password.lable }}{{ form.password(size=20) }}<br />
