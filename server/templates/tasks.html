@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<header><h1>Tasks</h1></header>
+<a href="#" onclick="show_new_task();">New Task</a>
+
+<div id="new_task" style="display: none;">
+    <form action="{{ url_for('tasks') }}" method="POST">
+        <h3>New task</h3>
+        Title:<br />
+        <input type="text" name="title" /><br />
+        Type:<br />
+        <input type="text" name="title" /><br />
+        Project ID:<br />
+        <input type="text" name="proj_id" /><br />
+        Assigned To:<br />
+        <input type="text" name="assigned_to" /><br />
+        Description:<br />
+        <textarea rows="5" cols="20" name="desc"></textarea><br />
+        Contact:<br />
+        <input type="text" name="contact" /><br />
+        <input type="submit" value="Add New Task" />
+    </form>
+</div>
+
+<div>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Project ID</th>
+            <th>Type</th>
+            <th>Title</th>
+            <th>Assigned To</th>
+            <th>Contact</th>
+        </tr>
+    {% for task in tasks %}
+        <tr>
+            <td><a href="{{ url_for('tasks', id=task.id) }}">{{ task.id }}</a></td>
+            <td>{{ task.project.id }}</td>
+            <td>{{ task.type }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.assigned_to }}</td>
+            <td>{{ task.contact }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+<script>
+    function show_new_task(){
+        document.getElementById('new_task').style.display = 'block';
+    }
+</script>
+{% endblock %}

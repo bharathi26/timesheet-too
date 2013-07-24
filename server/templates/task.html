@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<header><h1>Task <a href="{{ url_for('tasks', id=task.id) }}">{{ task.id }}</a></h1></header>
+{% if current_user.current_task.id != task.id %}
+<a href="{{ url_for('start_work', id=task.id) }}">Work on this task</a>
+{% else %}
+<a href="{{ url_for('stop_work', id=task.id) }}">Stop work on this task</a>
+{% endif %}
+
+
+<div class="task">
+    <a href="#" onclick="edit_task();">Edit Task</a><br />
+    <span class="task_id">ID: {{ task.id }}</span>
+    <span class="proj_id">Project: {{ task.project.id }}</span>
+    <span class="type">Type: {{ task.type }}</span>
+    <span class="title">Title: {{ task.title }}</span>
+    <span class="contact">Contact: {{ task.contact }}</span>
+    <span class="assigned_to">Assigned To: {{ task.assigned_to }}</span>
+    <div class="comments">
+        {% for comment in task.comments %}
+        <div>
+            {{ comment }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="edit_task" style="display: none;">
+    <form action="{{ url_for('tasks', id=task.id) }}" method="POST">
+        <input type="hidden" name="task_id" value="{{ task.id }}" />
+        Project:<br />
+        <input type="text" name="proj_id" value="{{ task.project.id }}" /><br />
+        Type: <br />
+        <input type="text" name="type" value="{{ task.type }}" /><br />
+        Title: <br />
+        <input type="text" name="title" value="{{ task.title }}" /><br />
+        Contact: <br />
+        <input type="text" name="contact" value="{{ task.contact }}" /><br />
+        Assigned To: <br />
+        <input type="text" name="assigned_to" value="{{ task.assigned_to }}" /><br />
+        Comment: <br />
+        <textarea name="comment"></textarea><br />
+        <input type="submit" value="Save" />
+    </form>
+<div>
+
+
+<script>
+    function edit_task(){
+        var taskdiv = document.getElementsByClassName('task')[0];
+        taskdiv.style.display = 'none';
+        document.getElementsByClassName('edit_task')[0].style.display = 'block';
+    }
+</script>
+{% endblock %}

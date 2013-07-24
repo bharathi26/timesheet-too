@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>{{ today }}</h3>
+<a href="{{ url_for('timesheet', date=yesterday) }}">&lt;-{{ yesterday }}</a> 
+<a href="{{ url_for('timesheet', date=tomorrow) }}">{{ tomorrow }}&gt;</a> 
+<br />
+<form action="{{ url_for('timesheet', date=today) }}" method="POST">
+<div id="intervals">
+{% for interval in intervals %}
+<input type="hidden" name="id" value="{{ interval.id }}" />
+<input type="hidden" name="task_id" value="{{ interval.task.id }}" />
+Task: <a href="{{ url_for('tasks', id=interval.task.id) }}">{{ interval.task.id }}</a>
+Start: <input type="text" name="start" value="{{ interval.start.strftime("%I:%M %p") }}" />
+End: <input type="text" name="end" value="{% if interval.end %}{{ interval.end.strftime("%I:%M %p") }}{% endif %}" />
+<br />
+{% endfor %}
+</div>
+<a href="#" onclick="new_interval();">New Interval</a>
+<br /><input type="submit" value="Save" />
+</form>
+
+<script type="text/javascript">
+    function new_interval(){
+        var intervals = document.getElementById('intervals');
+        intervals.innerHTML += 'Task: <input type="hidden" name="id" value="" /><input type="text" name="task_id" /> Start: <input type="text" name="start" /> End: <input type="text" name="end" />';
+    }
+</script>
+{% endblock %}

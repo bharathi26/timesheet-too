@@ -1,10 +1,31 @@
 <html>
     <body>
-        {% if current_user.is_authenticated() %}
-            Welcome, {{ current_user }}
-        {% else %}
-            <a href="{{ url_for('login') }}">Login</a>
-        {% endif %}
+        {% block messages %}
+        <ul>
+        {% for message in get_flashed_messages() %}
+           <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+        {% endblock %}
+    {% block navigation %}
+    <a href="{{ url_for('main') }}">Home</a> |
+    <a href="{{ url_for('projects') }}">Projects</a> |
+    <a href="{{ url_for('tasks') }}">Tasks</a>
+    {% if current_user.is_authenticated() %}
+    | <a href="{{ url_for('status_report') }}">Status Report</a>
+    | Current Task:
+    {% if current_user.current_task %}
+        <a href="{{ url_for('tasks', id=current_user.current_task.id) }}">{{ current_user.current_task.id }}</a>
+    {% else %}
+        None
+    {% endif %}
+    | <a href="{{ url_for('timesheet') }}">Timesheet</a>
+    {% endif %}
+
+
+    {% endblock %}
+    {% block content %}
+    {% endblock %}
     </body>
 </html>
 

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<header><h1>Projects</h1></header>
+<a href="#" onclick="show_new_project();">New Project</a>
+
+<div id="new_project" style="display: none;">
+    <form action="{{ url_for('projects') }}" method="POST">
+        <h3>New Project</h3>
+        ID:<br />
+        <input type="text" name="id" /><br />
+        Name:<br />
+        <input type="text" name="name" /><br />
+        Charge Code:<br />
+        <input type="text" name="charge_code" /><br />
+        Description:<br />
+        <textarea rows="5" cols="20" name="desc"></textarea><br />
+        <input type="submit" value="Add New Project" />
+    </form>
+</div>
+
+<div>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Charge Code</th>
+            <th>Description</th>
+        </tr>
+    {% for project in projects %}
+        <tr>
+            <td>{{ project.name }}</td>
+            <td>{{ project.id }}</td>
+            <td>{{ project.charge_code }}</td>
+            <td>{{ project.desc }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+<script>
+    function show_new_project(){
+        document.getElementById('new_project').style.display = 'block';
+    }
+</script>
+{% endblock %}
