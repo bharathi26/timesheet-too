@@ -73,6 +73,11 @@ class Task(Base):
         return sum(i.hours_spent for i in self.intervals if i.username == username)
 
 
+    @property
+    def time_spent(self):
+        return sum(i.hours_spent for i in self.intervals)
+
+
 class Comment(Base):
     __tablename__ = 'comments'
 
@@ -226,8 +231,11 @@ def list_projects():
     return projects
 
 
-def add_task(title, type, proj_id, assigned_to, contact, desc, user):
+def add_task(title, type, proj_id, assigned_to, contact, desc, estimate, user):
     task = Task(proj_id, title, type, assigned_to, contact)
+    if estimate:
+        task.original_estimate = estimate
+        task.current_estimate = estimate
     session.add(task)
     session.commit()
     if desc:
@@ -237,13 +245,16 @@ def add_task(title, type, proj_id, assigned_to, contact, desc, user):
     return task
 
 
-def update_task(id, proj_id, title, type, assigned_to, contact, comment, user):
+def update_task(id, proj_id, title, type, assigned_to, contact, comment, estimate, user):
     task = get_task(id)
     if task is None:
         return "No task with id {}".format(id)
     if comment:
         comment = Comment(id, comment, datetime.datetime.now(), user.username)
         session.add(comment)
+    if estimate:
+        task.current_estimate = estimate
+        task.original_estimate = task.original_estimate or estimate
     task.proj_id = proj_id
     task.title = title
     task.type = type

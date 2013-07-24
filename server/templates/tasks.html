@@ -16,6 +16,8 @@
         <input type="text" name="assigned_to" /><br />
         Description:<br />
         <textarea rows="5" cols="20" name="desc"></textarea><br />
+        Estimate:<br />
+        <input type="text" name="estimate" /><br />
         Contact:<br />
         <input type="text" name="contact" /><br />
         <input type="submit" value="Add New Task" />
@@ -30,6 +32,8 @@
             <th>Type</th>
             <th>Title</th>
             <th>Assigned To</th>
+            <th>Current Estimate</th>
+            <th>Time Spent</th>
             <th>Contact</th>
         </tr>
     {% for task in tasks %}
@@ -39,6 +43,8 @@
             <td>{{ task.type }}</td>
             <td>{{ task.title }}</td>
             <td>{{ task.assigned_to }}</td>
+            <td>{{ task.current_estimate }}</td>
+            <td>{{ "{:.2f} hrs".format(task.time_spent) }}</td>
             <td>{{ task.contact }}</td>
         </tr>
     {% endfor %}

@@ -53,6 +53,7 @@ def tasks(id):
                                    request.form.get('assigned_to'),
                                    request.form.get('contact'),
                                    request.form.get('desc'),
+                                   request.form.get('estimate'),
                                    current_user)
             flash('Added task {}'.format(task))
         return render_template('tasks.html', tasks=models.list_tasks())
@@ -65,6 +66,7 @@ def tasks(id):
                                      request.form.get('assigned_to'),
                                      request.form.get('contact'),
                                      request.form.get('comment'),
+                                     request.form.get('estimate'),
                                      current_user))
         return render_template('task.html', task=models.get_task(id))
 
