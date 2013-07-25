@@ -54,6 +54,7 @@ class Task(Base):
     original_estimate = Column(Float)
     comments = relationship("Comment", backref="task")
     intervals = relationship("Interval", backref="task")
+    status = Column(String)
 
 
     def __init__(self, proj_id, title, type, assigned_to, contact):
@@ -374,5 +375,3 @@ def get_status_report(user, start, end):
         projects[i.task.project][i.task].append(i)
     
     return projects
-
-Base.metadata.create_all(engine)
