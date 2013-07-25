@@ -1,4 +1,14 @@
 <html>
+    <head>
+    {% block style %}
+    <style type="text/css">
+        td {
+            white-space: nowrap;
+            overflow: auto;
+        }
+    </style>
+    {% endblock %}
+    </head>
     <body>
         {% block messages %}
         <ul>
