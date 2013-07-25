@@ -12,7 +12,6 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-
 class Project(Base):
     __tablename__ = 'projects'
 
@@ -209,6 +208,10 @@ def time_spent_on_project(proj_id, username):
 
 
 def get_user(username):
+    # This will ensure that no errors get the session in a bad state...
+    # Each request will either pass thru or if it needs it it will roll
+    # the sesssion back.
+    session.rollback() 
     return session.query(User).filter_by(username=username).first()
 
 
@@ -295,10 +298,11 @@ def start_work(id, username):
     return interval, previous
 
 
-def timesheet(date, username):
+def timesheet(date, user):
     morning = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
     evening = datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
-    return session.query(Interval).filter(Interval.start >= morning) \
+    return session.query(Interval).filter(Interval.username == user.username) \
+                                  .filter(Interval.start >= morning) \
                                   .filter(Interval.start <= evening) \
                                   .order_by(Interval.start).all()
 
