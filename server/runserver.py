@@ -43,6 +43,7 @@ def tasks(id):
         if request.method == 'POST':
             task = models.add_task(request.form.get('title'),
                                    request.form.get('type'),
+                                   request.form.get('status'),
                                    request.form.get('proj_id'),
                                    request.form.get('assigned_to'),
                                    request.form.get('contact'),
@@ -50,19 +51,33 @@ def tasks(id):
                                    request.form.get('estimate'),
                                    current_user)
             flash('Added task {}'.format(task))
-        return render_template('tasks.html', tasks=models.list_tasks())
+        return render_template('tasks.html',
+                               tasks=models.list_tasks(),
+                               projects=models.list_projects(),
+                               users=models.list_users(),
+                               types=models.list_task_types(),
+                               statuses=models.list_status_types(),
+                               )
     else:
         if request.method == "POST":
             flash(models.update_task(request.form.get('task_id'),
                                      request.form.get('proj_id'),
                                      request.form.get('title'),
                                      request.form.get('type'),
+                                     request.form.get('status'),
                                      request.form.get('assigned_to'),
                                      request.form.get('contact'),
                                      request.form.get('comment'),
                                      request.form.get('estimate'),
                                      current_user))
-        return render_template('task.html', task=models.get_task(id))
+        return render_template('task.html', 
+                               task=models.get_task(id),
+                               tasks=models.list_tasks(),
+                               projects=models.list_projects(),
+                               users=models.list_users(),
+                               types=models.list_task_types(),
+                               statuses=models.list_status_types(),
+                               )
 
 
 @boog_slayer.route('/start_work/<id>')

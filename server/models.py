@@ -58,10 +58,11 @@ class Task(Base):
     status = Column(String)
 
 
-    def __init__(self, proj_id, title, type, assigned_to, contact):
+    def __init__(self, proj_id, title, type, status, assigned_to, contact):
         self.proj_id = proj_id
         self.title = title
         self.type = type
+        self.status = status
         self.assigned_to = assigned_to
         self.contact = contact
 
@@ -232,12 +233,11 @@ def add_project(id, name, charge_code, desc):
 
 
 def list_projects():
-    projects = session.query(Project).all()
-    return projects
+    return session.query(Project).all()
 
 
-def add_task(title, type, proj_id, assigned_to, contact, desc, estimate, user):
-    task = Task(proj_id, title, type, assigned_to, contact)
+def add_task(title, type, status, proj_id, assigned_to, contact, desc, estimate, user):
+    task = Task(proj_id, title, type, status, assigned_to, contact)
     if estimate:
         task.original_estimate = estimate
         task.current_estimate = estimate
@@ -250,7 +250,7 @@ def add_task(title, type, proj_id, assigned_to, contact, desc, estimate, user):
     return task
 
 
-def update_task(id, proj_id, title, type, assigned_to, contact, comment, estimate, user):
+def update_task(id, proj_id, title, type, status, assigned_to, contact, comment, estimate, user):
     task = get_task(id)
     if task is None:
         return "No task with id {}".format(id)
@@ -263,6 +263,7 @@ def update_task(id, proj_id, title, type, assigned_to, contact, comment, estimat
     task.proj_id = proj_id
     task.title = title
     task.type = type
+    task.status = status
     task.assigned_to = assigned_to
     task.contact = contact
     session.add(task)
@@ -390,5 +391,26 @@ def delete_interval(interval_id, user):
         return "Could not find interval"
     except MultipleResultsFound:
         return "Found too many intervals?"
+
+
+def list_users():
+    return session.query(User).all()
+
+
+def list_task_types():
+    return ('Bug',
+            'Task',
+            'Feature',
+           )
+
+
+def list_status_types():
+    return ('New',
+            'In Progress',
+            'Closed',
+            'Closed - Duplicate',
+            "Closed - Won't fix",
+           )
+
 
 Base.metadata.create_all(engine)

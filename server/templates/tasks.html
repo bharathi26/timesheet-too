@@ -6,20 +6,8 @@
 <div id="new_task" style="display: none;">
     <form action="{{ url_for('.tasks') }}" method="POST">
         <h3>New task</h3>
-        Title:<br />
-        <input type="text" name="title" /><br />
-        Type:<br />
-        <input type="text" name="type" /><br />
-        Project ID:<br />
-        <input type="text" name="proj_id" /><br />
-        Assigned To:<br />
-        <input type="text" name="assigned_to" /><br />
-        Description:<br />
-        <textarea rows="5" cols="20" name="desc"></textarea><br />
-        Estimate:<br />
-        <input type="text" name="estimate" /><br />
-        Contact:<br />
-        <input type="text" name="contact" /><br />
+        {% set task=None %}
+        {% include 'forms/task.html' %}
         <input type="submit" value="Add New Task" />
     </form>
 </div>
@@ -30,6 +18,7 @@
             <th>ID</th>
             <th>Project ID</th>
             <th>Type</th>
+            <th>Status</th>
             <th>Title</th>
             <th>Assigned To</th>
             <th>Current Estimate</th>
@@ -41,6 +30,7 @@
             <td><a href="{{ url_for('.tasks', id=task.id) }}">{{ task.id }}</a></td>
             <td>{{ task.project.id }}</td>
             <td>{{ task.type }}</td>
+            <td>{{ task.status }}</td>
             <td>{{ task.title }}</td>
             <td>{{ task.assigned_to }}</td>
             <td>{{ task.current_estimate }}</td>

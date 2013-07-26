@@ -1,4 +1,11 @@
 {% extends 'base.html' %}
+{% block style %}
+<style type="text/css">
+    div.task span {
+        border: thin black solid;
+    }
+</style>
+{% endblock %}
 {% block content %}
 <header><h1>Task <a href="{{ url_for('.tasks', id=task.id) }}">{{ task.id }}</a></h1></header>
 {% if current_user.current_task.id != task.id %}
@@ -13,6 +20,7 @@
     <span class="task_id">ID: {{ task.id }}</span>
     <span class="proj_id">Project: {{ task.project.id }}</span>
     <span class="type">Type: {{ task.type }}</span>
+    <span class="status">Status: {{ task.status }}</span>
     <span class="title">Title: {{ task.title }}</span>
     <span class="contact">Contact: {{ task.contact }}</span>
     <span class="assigned_to">Assigned To: {{ task.assigned_to }}</span>
@@ -26,21 +34,7 @@
 </div>
 <div class="edit_task" style="display: none;">
     <form action="{{ url_for('.tasks', id=task.id) }}" method="POST">
-        <input type="hidden" name="task_id" value="{{ task.id }}" />
-        Project:<br />
-        <input type="text" name="proj_id" value="{{ task.project.id }}" /><br />
-        Type: <br />
-        <input type="text" name="type" value="{{ task.type }}" /><br />
-        Title: <br />
-        <input type="text" name="title" value="{{ task.title }}" /><br />
-        Contact: <br />
-        <input type="text" name="contact" value="{{ task.contact }}" /><br />
-        Assigned To: <br />
-        <input type="text" name="assigned_to" value="{{ task.assigned_to }}" /><br />
-        Current Estimate: <br />
-        <input type="text" name="estimate" value="{{ task.current_estimate }}" /><br />
-        Comment: <br />
-        <textarea name="comment"></textarea><br />
+        {% include 'forms/task.html' %}
         <input type="submit" value="Save" />
     </form>
 <div>
