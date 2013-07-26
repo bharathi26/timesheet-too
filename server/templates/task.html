@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-<header><h1>Task <a href="{{ url_for('tasks', id=task.id) }}">{{ task.id }}</a></h1></header>
+<header><h1>Task <a href="{{ url_for('.tasks', id=task.id) }}">{{ task.id }}</a></h1></header>
 {% if current_user.current_task.id != task.id %}
-<a href="{{ url_for('start_work', id=task.id) }}">Work on this task</a>
+<a href="{{ url_for('.start_work', id=task.id) }}">Work on this task</a>
 {% else %}
-<a href="{{ url_for('stop_work', id=task.id) }}">Stop work on this task</a>
+<a href="{{ url_for('.stop_work', id=task.id) }}">Stop work on this task</a>
 {% endif %}
 
 
@@ -25,7 +25,7 @@
     </div>
 </div>
 <div class="edit_task" style="display: none;">
-    <form action="{{ url_for('tasks', id=task.id) }}" method="POST">
+    <form action="{{ url_for('.tasks', id=task.id) }}" method="POST">
         <input type="hidden" name="task_id" value="{{ task.id }}" />
         Project:<br />
         <input type="text" name="proj_id" value="{{ task.project.id }}" /><br />

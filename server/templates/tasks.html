@@ -4,7 +4,7 @@
 <a href="#" onclick="show_new_task();">New Task</a>
 
 <div id="new_task" style="display: none;">
-    <form action="{{ url_for('tasks') }}" method="POST">
+    <form action="{{ url_for('.tasks') }}" method="POST">
         <h3>New task</h3>
         Title:<br />
         <input type="text" name="title" /><br />
@@ -38,7 +38,7 @@
         </tr>
     {% for task in tasks %}
         <tr>
-            <td><a href="{{ url_for('tasks', id=task.id) }}">{{ task.id }}</a></td>
+            <td><a href="{{ url_for('.tasks', id=task.id) }}">{{ task.id }}</a></td>
             <td>{{ task.project.id }}</td>
             <td>{{ task.type }}</td>
             <td>{{ task.title }}</td>

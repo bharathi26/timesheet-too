@@ -391,4 +391,4 @@ def delete_interval(interval_id, user):
     except MultipleResultsFound:
         return "Found too many intervals?"
 
-
+Base.metadata.create_all(engine)
