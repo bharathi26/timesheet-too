@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey,\
                        Float, DateTime, or_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from flask import flash
 
 engine = create_engine('sqlite:///timesheet.sq3')
@@ -375,3 +376,19 @@ def get_status_report(user, start, end):
         projects[i.task.project][i.task].append(i)
     
     return projects
+
+
+def delete_interval(interval_id, user):
+    try:
+        interval = session.query(Interval).filter_by(username = user.username,
+                                                     id = interval_id).one()
+        message = "Deleted {}".format(str(interval))
+        session.delete(interval)
+        session.commit()
+        return message
+    except NoResultFound:
+        return "Could not find interval"
+    except MultipleResultsFound:
+        return "Found too many intervals?"
+
+

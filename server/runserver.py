@@ -138,5 +138,12 @@ def timesheet(date):
                            intervals=models.timesheet(date, current_user))
 
 
+@app.route("/delete_interval/<id>")
+@login_required
+def delete_interval(id):
+    flash(models.delete_interval(id, current_user))
+    return redirect(request.args.get('next') or url_for('timesheet'))
+
+
 if __name__ == "__main__":
     app.run('0.0.0.0', port=5000, debug=True)

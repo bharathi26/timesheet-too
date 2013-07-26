@@ -13,6 +13,7 @@
 Task: <a href="{{ url_for('tasks', id=interval.task.id) }}">{{ interval.task.id }}</a>
 Start: <input type="text" name="start" value="{{ interval.start.strftime("%I:%M %p") }}" />
 End: <input type="text" name="end" value="{% if interval.end %}{{ interval.end.strftime("%I:%M %p") }}{% endif %}" />
+<a href="{{ url_for('delete_interval', id=interval.id) }}">Delete</a>
 <br />
 {% endfor %}
 </div>
