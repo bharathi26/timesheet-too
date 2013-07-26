@@ -22,7 +22,7 @@ Title: <br />
 Contact: <br />
 <input type="text" name="contact" value="{{ task.contact }}" /><br />
 Assigned To: <br />
-<select name="type">
+<select name="assigned_to">
 {% for user in users %}
     <option value="{{ user.username }}">{{ user.fullname }}</option>
 {% endfor %}
