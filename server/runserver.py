@@ -58,14 +58,14 @@ def tasks(id):
     form.status.choices = models.list_status_types()
     if id is None:
         if request.method == 'POST':
-            task = models.add_task(request.form.get('title'),
-                                   request.form.get('type'),
-                                   request.form.get('status'),
-                                   request.form.get('proj_id'),
-                                   request.form.get('assigned_to'),
-                                   request.form.get('contact'),
-                                   request.form.get('desc'),
-                                   request.form.get('estimate'),
+            task = models.add_task(form.title.data,
+                                   form.type.data,
+                                   form.status.data,
+                                   form.project.data,
+                                   form.assigned_to.data,
+                                   form.contact.data,
+                                   form.comment.data,
+                                   form.current_estimate.data,
                                    current_user)
             flash('Added task {}'.format(task))
         return render_template('tasks.html',
