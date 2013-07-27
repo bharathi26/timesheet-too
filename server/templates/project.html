@@ -6,14 +6,7 @@
 <div id="new_project" style="display: none;">
     <form action="{{ url_for('.projects') }}" method="POST">
         <h3>New Project</h3>
-        ID:<br />
-        <input type="text" name="id" /><br />
-        Name:<br />
-        <input type="text" name="name" /><br />
-        Charge Code:<br />
-        <input type="text" name="charge_code" /><br />
-        Description:<br />
-        <textarea rows="5" cols="20" name="desc"></textarea><br />
+        {% include 'forms/project.html' %}
         <input type="submit" value="Add New Project" />
     </form>
 </div>

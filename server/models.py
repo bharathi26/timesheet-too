@@ -399,18 +399,18 @@ def list_users():
 
 
 def list_task_types():
-    return ('Bug',
-            'Task',
-            'Feature',
+    return (('Bug', 'Bug'),
+            ('Task', 'Task'),
+            ('Feature', 'Feature'),
            )
 
 
 def list_status_types():
-    return ('New',
-            'In Progress',
-            'Closed',
-            'Closed - Duplicate',
-            "Closed - Won't fix",
+    return (('New','New'),
+            ('In Progress','In Progress'),
+            ('Closed - Complete','Closed - Complete'),
+            ('Closed - Duplicate','Closed - Duplicate'),
+            ("Closed - Won't fix","Closed - Won't fix"),
            )
 
 

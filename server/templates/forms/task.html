@@ -1,33 +1,18 @@
-<input type="hidden" name="task_id" value="{{ task.id }}" />
-Project:<br />
-<select name="proj_id">
-{% for proj in projects %}
-    <option value="{{ proj.id }}" {% if proj.id == task.proj_id %}selected{% endif %}>{{ proj.name }} - {{ proj.id }}</option>
-{% endfor %}
-</select><br />
-Type: <br />
-<select name="type">
-{% for type in types %}
-    <option value="{{ type }}" {% if type == task.type %}selected{% endif %}>{{ type }}</option>
-{% endfor %}
-</select><br />
-Status: <br />
-<select name="status">
-{% for status in statuses %}
-    <option value="{{ status }}" {% if status == task.status %}selected{% endif %}>{{ status }}</option>
-{% endfor %}
-</select><br />
-Title: <br />
-<input type="text" name="title" value="{{ task.title }}" /><br />
-Contact: <br />
-<input type="text" name="contact" value="{{ task.contact }}" /><br />
-Assigned To: <br />
-<select name="assigned_to">
-{% for user in users %}
-    <option value="{{ user.username }}">{{ user.fullname }}</option>
-{% endfor %}
-</select><br />
-Current Estimate: <br />
-<input type="text" name="estimate" value="{{ task.current_estimate or 0.0 }}" /><br />
-Comment: <br />
-<textarea name="comment"></textarea><br />
+{{ form.csrf_token }}
+{{ form.id() }}
+{{ form.project.label() }}<br />
+{{ form.project() }}<br />
+{{ form.type.label() }}<br />
+{{ form.type() }}<br />
+{{ form.status.label() }}<br />
+{{ form.status() }}<br />
+{{ form.title.label() }}<br />
+{{ form.title() }}<br />
+{{ form.contact.label() }}<br />
+{{ form.contact() }}<br />
+{{ form.assigned_to.label() }}<br />
+{{ form.assigned_to() }}<br />
+{{ form.current_estimate.label() }}<br />
+{{ form.current_estimate() }}<br />
+{{ form.comment.label() }}<br />
+{{ form.comment() }}<br />

@@ -6,6 +6,8 @@ from flask import Flask
 from flask import Blueprint, render_template, url_for, redirect, flash, request
 from flask.ext.login import LoginManager, current_user, login_user, \
                             logout_user, login_required
+import logging
+log = logging.getLogger('boog_slayer')
 
 boog_slayer = Blueprint('boog_slayer', __name__, template_folder='templates')
 
@@ -27,18 +29,33 @@ def status_report(start, end):
 
 @boog_slayer.route('/projects', methods=['GET', 'POST'])
 def projects():
-    if request.method == 'POST':
-        proj = models.add_project(request.form.get('id'),
-                                  request.form.get('name'),
-                                  request.form.get('charge_code'),
-                                  request.form.get('desc'))
+    form = forms.project.ProjectForm()
+    if form.validate_on_submit():
+        proj = models.add_project(form.id.data,
+                                  form.name.data,
+                                  form.charge_code.data,
+                                  form.description.data,
+                                 )
         flash("Added project: {}".format(proj))
-    return render_template('project.html', projects=models.list_projects())
+        form.id.data = None
+        form.name.data = None
+        form.charge_code.data = None
+        form.description.data = None
+    return render_template('project.html',
+                           projects=models.list_projects(),
+                           form=form)
 
 
 @boog_slayer.route('/tasks', methods=['GET', 'POST'], defaults={'id':None})
 @boog_slayer.route('/tasks/<id>', methods=['GET', 'POST'])
 def tasks(id):
+    form = forms.task.TaskForm()
+    form.project.choices = tuple((p.id, '{} - {}'.format(p.name, p.id))
+                                        for p in models.list_projects())
+    form.assigned_to.choices = tuple((u.username, u.fullname) 
+                                        for u in models.list_users())
+    form.type.choices = models.list_task_types()
+    form.status.choices = models.list_status_types()
     if id is None:
         if request.method == 'POST':
             task = models.add_task(request.form.get('title'),
@@ -53,31 +70,31 @@ def tasks(id):
             flash('Added task {}'.format(task))
         return render_template('tasks.html',
                                tasks=models.list_tasks(),
-                               projects=models.list_projects(),
-                               users=models.list_users(),
-                               types=models.list_task_types(),
-                               statuses=models.list_status_types(),
+                               form=form,
                                )
     else:
         if request.method == "POST":
-            flash(models.update_task(request.form.get('task_id'),
-                                     request.form.get('proj_id'),
-                                     request.form.get('title'),
-                                     request.form.get('type'),
-                                     request.form.get('status'),
-                                     request.form.get('assigned_to'),
-                                     request.form.get('contact'),
-                                     request.form.get('comment'),
-                                     request.form.get('estimate'),
+            flash(models.update_task(form.id.data,
+                                     form.project.data,
+                                     form.title.data,
+                                     form.type.data,
+                                     form.status.data,
+                                     form.assigned_to.data,
+                                     form.contact.data,
+                                     form.comment.data,
+                                     form.current_estimate.data,
                                      current_user))
-        return render_template('task.html', 
-                               task=models.get_task(id),
-                               tasks=models.list_tasks(),
-                               projects=models.list_projects(),
-                               users=models.list_users(),
-                               types=models.list_task_types(),
-                               statuses=models.list_status_types(),
-                               )
+        task = models.get_task(id)
+        form.assigned_to.data = current_user.username
+        form.status.default = task.status
+        form.type.default = task.type
+        form.project.default = task.project.id
+        form.process()
+        form.id.data = id
+        form.title.data = task.title
+        form.contact.data = task.contact
+        form.current_estimate.data = task.current_estimate
+        return render_template('task.html', task=task, form=form)
 
 
 @boog_slayer.route('/start_work/<id>')
@@ -168,6 +185,9 @@ if __name__ == "__main__":
     app.secret_key = 'This should be something different'.encode()
     login_manager = LoginManager()
     login_manager.init_app(app)
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    log.addHandler(handler)
 
 
     @login_manager.user_loader
