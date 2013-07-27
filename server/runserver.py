@@ -100,6 +100,7 @@ def stop_work(id):
 
 @boog_slayer.route('/login', methods=['GET', 'POST'])
 def login():
+    form = forms.login.LoginForm()
     if current_user.is_authenticated():
         flash("Already logged in")
         return redirect(url_for('.main'))
@@ -110,7 +111,7 @@ def login():
         else:
             login_user(user)
             return redirect(request.args.get('next') or url_for('.main'))
-    return render_template('login.html')
+    return render_template('login.html', form=form)
 
 
 @boog_slayer.route('/logout')
@@ -164,7 +165,7 @@ def delete_interval(id):
 if __name__ == "__main__":
     app = Flask('foo')
     app.register_blueprint(boog_slayer)
-    app.secret_key = 'This should be something different'
+    app.secret_key = 'This should be something different'.encode()
     login_manager = LoginManager()
     login_manager.init_app(app)
 

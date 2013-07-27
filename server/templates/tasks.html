@@ -32,7 +32,7 @@
             <td>{{ task.type }}</td>
             <td>{{ task.status }}</td>
             <td>{{ task.title }}</td>
-            <td>{{ task.assigned_to }}</td>
+            <td>{{ task.user.fullname }}</td>
             <td>{{ task.current_estimate }}</td>
             <td>{{ "{:.2f} hrs".format(task.time_spent) }}</td>
             <td>{{ task.contact }}</td>

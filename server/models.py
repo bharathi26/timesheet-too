@@ -146,6 +146,7 @@ class User(Base):
     fullname = Column(String)
     password = Column(String)
     intervals = relationship("Interval", backref="user")
+    assigned_tasks = relationship("Task", backref="user")
 
 
     def __init__(self, username, fullname, password):
