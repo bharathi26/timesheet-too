@@ -1,4 +1,5 @@
 import os
+import sys
 import models
 import forms
 import datetime
@@ -185,8 +186,8 @@ if __name__ == "__main__":
     app.secret_key = 'This should be something different'.encode()
     login_manager = LoginManager()
     login_manager.init_app(app)
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG)
+    handler = logging.StreamHandler(stream=sys.stdout)
+    log.setLevel(logging.DEBUG)
     log.addHandler(handler)
 
 

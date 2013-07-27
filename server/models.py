@@ -1,11 +1,13 @@
 import datetime
-import logging as log
+import logging 
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey,\
                        Float, DateTime, or_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from flask import flash
+
+log = logging.getLogger('boog_slayer.models')
 
 engine = create_engine('sqlite:///timesheet.sq3')
 Base = declarative_base()
@@ -293,6 +295,9 @@ def stop_work(id, username):
 def start_work(id, username):
     previous = session.query(Interval).filter_by(username=username,
                                                  end=None).first()
+    task = session.query(Task).filter_by(id=id).one()
+    task.status = 'In Progress'
+    session.add(task)
     interval = Interval(id, username, datetime.datetime.now())
     if previous:
         previous.end = interval.start
