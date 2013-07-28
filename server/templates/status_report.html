@@ -6,7 +6,7 @@
         <li>{{ project.id }} - {{ project.name }}</li>
         <ul>
             {% for task in report[project] %}
-                <li>{{ task.title }} - {{ "{:.2f} hrs".format(task.hours_spent_by_user(current_user.username)) }}</li>
+                <li>{{ task.id }} - {{ task.title }} - {{ "{:.2f} hrs".format(task.hours_spent_by_user(current_user.username, start, end)) }}</li>
                 <ul>
                 {% for comment in task.comments %}
                 <li>{{ comment.timestamp.strftime("%Y-%m-%d %I:%M %p")  }} - {{ comment.text }} - {{ comment.author }}</li>

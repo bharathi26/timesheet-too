@@ -25,7 +25,9 @@ def status_report(start, end):
     return render_template('status_report.html',
                            report=models.get_status_report(current_user,
                                                            start,
-                                                           end))
+                                                           end),
+                           start=start,
+                           end=end)
 
 
 @boog_slayer.route('/projects', methods=['GET', 'POST'])

@@ -73,8 +73,19 @@ class Task(Base):
         return "<Task {} - {}>".format(self.proj_id, self.title)
 
 
-    def hours_spent_by_user(self, username):
-        return sum(i.hours_spent for i in self.intervals if i.username == username)
+    def hours_spent_by_user(self, username, start=None, end=None):
+        print("hello?")
+        if start is not None:
+            start = datetime.datetime.strptime(start, '%Y-%m-%d')
+        if end is not None:
+            end = datetime.datetime.strptime(end, '%Y-%m-%d')
+            end = end.replace(hour=23, minute=59, second=59)
+        log.debug("{} {}".format(start, end))
+        if start is None or end is None:
+            return sum(i.hours_spent for i in self.intervals if i.username == username)
+        else:
+            return sum(i.hours_spent_between(start, end)
+                            for i in self.intervals if i.username == username)
 
 
     @property
@@ -139,6 +150,28 @@ class Interval(Base):
     def hours_spent(self):
         end = self.end or datetime.datetime.now()
         return (end - self.start).total_seconds()/60/60
+
+
+    def hours_spent_between(self, start, end):
+        now = datetime.datetime.now()
+        # Pick the latest start time
+        if self.start < start:
+            self.start = start
+        # Earliest end time
+        if self.end is None:
+            if now < end:
+                self.end = now
+            else:
+                self.end = end
+
+        if self.end < start:
+            self.end = start
+                
+        end = self.end if end > (self.end or datetime.datetime.now()) else end
+        log.debug('Start: %s', start)
+        log.debug('End: %s', end)
+        log.debug("%s %s", self.start, self.end)
+        return self.hours_spent
 
 
 class User(Base):
