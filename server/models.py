@@ -74,13 +74,7 @@ class Task(Base):
 
 
     def hours_spent_by_user(self, username, start=None, end=None):
-        print("hello?")
-        if start is not None:
-            start = datetime.datetime.strptime(start, '%Y-%m-%d')
-        if end is not None:
-            end = datetime.datetime.strptime(end, '%Y-%m-%d')
-            end = end.replace(hour=23, minute=59, second=59)
-        log.debug("{} {}".format(start, end))
+        log.debug("%s %s", start, end)
         if start is None or end is None:
             return sum(i.hours_spent for i in self.intervals if i.username == username)
         else:
@@ -390,18 +384,6 @@ def update_times(date, form, username):
     
 
 def get_status_report(user, start, end):
-    offset = 3 - datetime.date.today().weekday()
-    if end is None:
-        end = datetime.date.today() + datetime.timedelta(offset)
-    else:
-        end = datetime.datetime.strptime(end, "%Y-%m-%d").replace(hour=23,
-                                                                minute=59)
-    if start is None:
-        start = end - datetime.timedelta(6)
-    else:
-        start = datetime.datetime.strptime(start, "%Y-%m-%d").date()
-    
-
     intervals = session.query(Interval) \
                        .filter(Interval.username == user.username) \
                        .filter(Interval.start >= start) \

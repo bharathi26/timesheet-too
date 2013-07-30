@@ -22,11 +22,26 @@ def main():
 @boog_slayer.route('/status-report/<start>/<end>')
 @login_required
 def status_report(start, end):
+    offset = 3 - datetime.date.today().weekday()
+    if end is None:
+        end = datetime.datetime.today() + datetime.timedelta(offset)
+    else:
+        end = datetime.datetime.strptime(str(end)[:10],
+                                         "%Y-%m-%d").replace(hour=23,
+                                                             minute=59)
+    if start is None:
+        start = end - datetime.timedelta(6)
+    else:
+        start = datetime.datetime.strptime(str(start)[:10], "%Y-%m-%d")
+    
+    log.debug("{} {}".format(start.date(), end.date()))
     return render_template('status_report.html',
                            report=models.get_status_report(current_user,
                                                            start,
                                                            end),
+                           today=datetime.datetime.now(),
                            start=start,
+                           span=datetime.timedelta(1),
                            end=end)
 
 

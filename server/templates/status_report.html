@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 <div>
+<a href="{{ url_for('.status_report', start=start.date()-span, end=end.date()) }}">&lt;--</a> Start: {{ start.date() }}
+| <a href="{{ url_for('.status_report') }}">Reset</a> 
+| End: {{ end.date() }} <a href="{{ url_for('.status_report', start=start.date(), end=end.date()+span) }}">--&gt;</a> 
+</div>
+<div>
     <ul>
     {% for project in report %}
         <li>{{ project.id }} - {{ project.name }}</li>
