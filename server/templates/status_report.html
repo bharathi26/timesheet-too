@@ -2,8 +2,11 @@
 {% block content %}
 <div>
 <a href="{{ url_for('.status_report', start=start.date()-span, end=end.date()) }}">&lt;--</a> Start: {{ start.date() }}
+<a href="{{ url_for('.status_report', start=start.date()+span, end=end.date()) }}">--&gt;</a>
 | <a href="{{ url_for('.status_report') }}">Reset</a> 
-| End: {{ end.date() }} <a href="{{ url_for('.status_report', start=start.date(), end=end.date()+span) }}">--&gt;</a> 
+| End: 
+<a href="{{ url_for('.status_report', start=start.date(), end=end.date()-span) }}">&lt;--</a> 
+{{ end.date() }} <a href="{{ url_for('.status_report', start=start.date(), end=end.date()+span) }}">--&gt;</a> 
 </div>
 <div>
     <ul>
