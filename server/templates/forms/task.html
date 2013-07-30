@@ -1,18 +1,51 @@
 {{ form.csrf_token }}
 {{ form.id() }}
-{{ form.project.label() }}<br />
-{{ form.project() }}<br />
-{{ form.type.label() }}<br />
-{{ form.type() }}<br />
-{{ form.status.label() }}<br />
-{{ form.status() }}<br />
-{{ form.title.label() }}<br />
-{{ form.title() }}<br />
-{{ form.contact.label() }}<br />
-{{ form.contact() }}<br />
-{{ form.assigned_to.label() }}<br />
-{{ form.assigned_to() }}<br />
-{{ form.current_estimate.label() }}<br />
-{{ form.current_estimate() }}<br />
-{{ form.comment.label() }}<br />
-{{ form.comment() }}<br />
+<div class="task_side">
+    <div class="task_id">{% if task %}<a href="{{ url_for('.task') }}?id={{ task.id }}">{{ task.id }}</a>{% endif %}</div>
+    <span class="contact">
+    {{ form.contact.label() }}<br />
+    {{ form.contact(size=13) }}<span class="errors"></span>
+    </span>
+    <span class="current_estimate">
+    {{ form.current_estimate.label() }}<br />
+    {{ form.current_estimate(size=13) }}<span class="errors"></span>
+    </span>
+</div>
+<div class="task_main">
+    <span class="project">
+        {{ form.project.label() }}<br />
+        {{ form.project() }}<span class="errors"></span>
+    </span>
+    <span class="type">
+    {{ form.type.label() }}<br />
+    {{ form.type() }}<span class="errors"></span>
+    </span>
+    <span class="status">
+    {{ form.status.label() }}<br />
+    {{ form.status() }}<span class="errors"></span>
+    </span>
+    <span class="assigned_to">
+    {{ form.assigned_to.label() }}<br />
+    {{ form.assigned_to() }}<span class="errors"></span>
+    </span>
+    <span class="title">
+    {{ form.title.label() }}<br />
+    {{ form.title() }}<span class="errors"></span>
+    </span>
+    <span class="comment">
+    {{ form.comment.label() }}<br />
+    {{ form.comment() }}<span class="errors"></span>
+    </span>
+    <div class="comments">
+        {% if task %}
+        {% for comment in task.comments %}
+        <div class="comment">
+            {{ comment.timestamp.strftime("%Y-%m-%d %I:%M %p") }} - <div class="author">{{ comment.user.fullname }}</div>
+            <span class="comment_text">
+            {{ comment.text }}
+            </span>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>

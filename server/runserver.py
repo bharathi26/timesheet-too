@@ -100,6 +100,33 @@ def tasks(id):
         return render_template('task.html', task=task, form=form)
 
 
+@boog_slayer.route('/task', methods=['GET', 'POST'])
+def task():
+    form = forms.task.TaskForm()
+    form.project.choices = tuple((p.id, '{} - {}'.format(p.name, p.id))
+                                        for p in models.list_projects())
+    form.assigned_to.choices = tuple((u.username, u.fullname) 
+                                        for u in models.list_users())
+    form.type.choices = models.list_task_types()
+    form.status.choices = models.list_status_types()
+    task = models.get_task(request.args.get('id'))
+    if task is not None:
+        form.assigned_to.data = current_user.username
+        form.status.default = task.status
+        form.type.default = task.type
+        form.project.default = task.project.id
+        form.process()
+        form.id.data = id
+        form.title.data = task.title
+        form.contact.data = task.contact
+        form.current_estimate.data = task.current_estimate
+
+    return render_template('task.html',
+                           task=task,
+                           form=form,
+                           mode=request.args.get('mode'))
+
+
 @boog_slayer.route('/start_work/<id>')
 @login_required
 def start_work(id):

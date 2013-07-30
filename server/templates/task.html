@@ -1,50 +1,102 @@
 {% extends 'base.html' %}
 {% block style %}
 <style type="text/css">
-    div.task span {
+
+    div {
+        /*border: thin black dashed;*/
+    }
+
+    div.edit_task {
+        width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 2em;
         border: thin black solid;
+        border-radius: 3px;
+    }
+
+    div.task_side {
+        float: left;
+        border-right: thin #ccc solid;
+        font-size: 0.75em;
+        margin-bottom: 0px;
+        position: relative;
+        width: 130px;
+        height: auto;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+    }
+
+    div.task_main {
+        width: 456px;
+        float: right;
+    }
+
+    .task_side div.task_id {
+        height: 100px;
+        border-bottom: thin #ccc solid;
+        font-size: 7em;
+        text-align: center;
+    }
+
+    .task_side div.task_id a {
+        text-decoration: none;
+    }
+
+    div.task_main .project, .type, .status, .assigned_to {
+        display: block;
+        float: left;
+    }
+
+    .task_main .title {
+        clear: both;
+        display: block;
+        width: 100%;
+    }
+
+    .task_main .title #title {
+        width:  95%;
+    }
+
+    .task_main .comment {
+        display: block;
+        bottom: 0px;
+        margin-right: 1em;
+    }
+
+    .task_main .comment #comment {
+        width: 100%;
+        height: 140px;
+    }
+
+    .task_main .comments {
+        display: block;
+        clear: both;
+    }
+
+    .task_main .comments .comment {
+        border-bottom: 2px #ccc solid;
+        white-space: pre-line;
+    }
+
+    .task_main .comments .author {
+        display: inline;
+        background-color: #eee;
     }
 </style>
 {% endblock %}
+
 {% block content %}
-<header><h1>Task <a href="{{ url_for('.tasks', id=task.id) }}">{{ task.id }}</a></h1></header>
-{% if current_user.current_task.id != task.id %}
-<a href="{{ url_for('.start_work', id=task.id) }}">Work on this task</a>
-{% else %}
-<a href="{{ url_for('.stop_work', id=task.id) }}">Stop work on this task</a>
-{% endif %}
 
-
-<div class="task">
-    <a href="#" onclick="edit_task();">Edit Task</a><br />
-    <span class="task_id">ID: {{ task.id }}</span>
-    <span class="proj_id">Project: {{ task.project.id }}</span>
-    <span class="type">Type: {{ task.type }}</span>
-    <span class="status">Status: {{ task.status }}</span>
-    <span class="title">Title: {{ task.title }}</span>
-    <span class="contact">Contact: {{ task.contact }}</span>
-    <span class="assigned_to">Assigned To: {{ task.assigned_to }}</span>
-    <div class="comments">
-        {% for comment in task.comments %}
-        <div>
-            {{ comment }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-<div class="edit_task" style="display: none;">
+<div class="edit_task">
     <form action="{{ url_for('.tasks', id=task.id) }}" method="POST">
         {% include 'forms/task.html' %}
-        <input type="submit" value="Save" />
+        <div style='text-align: right; margin-right: 1em; clear: both;'>
+            <input type="submit" value="OK" />
+            <input type="reset" value="Cancel" />
+        </div>
     </form>
-<div>
+</div>
 
-
-<script>
-    function edit_task(){
-        var taskdiv = document.getElementsByClassName('task')[0];
-        taskdiv.style.display = 'none';
-        document.getElementsByClassName('edit_task')[0].style.display = 'block';
-    }
-</script>
 {% endblock %}

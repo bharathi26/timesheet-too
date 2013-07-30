@@ -99,7 +99,7 @@ class Comment(Base):
     task_id = Column(Integer, ForeignKey('tasks.id'), primary_key=True)
     timestamp = Column(DateTime, primary_key=True)
     text = Column(String)
-    author = Column(String)
+    author = Column(String, ForeignKey('users.username'))
 
 
     def __init__(self, task_id, text, timestamp, author):
@@ -182,6 +182,7 @@ class User(Base):
     password = Column(String)
     intervals = relationship("Interval", backref="user")
     assigned_tasks = relationship("Task", backref="user")
+    comments = relationship("Comment", backref="user")
 
 
     def __init__(self, username, fullname, password):
