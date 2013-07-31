@@ -108,7 +108,7 @@ def tasks(id):
         form.type.default = task.type
         form.project.default = task.project.id
         form.process()
-        form.id.data = id
+        form.id.data = task.id
         form.title.data = task.title
         form.contact.data = task.contact
         form.current_estimate.data = task.current_estimate
@@ -126,15 +126,17 @@ def task():
     form.status.choices = models.list_status_types()
     task = models.get_task(request.args.get('id'))
     if task is not None:
-        form.assigned_to.data = current_user.username
         form.status.default = task.status
         form.type.default = task.type
         form.project.default = task.project.id
         form.process()
-        form.id.data = id
+        form.assigned_to.data = task.assigned_to or current_user.get_id()
+        form.id.data = task.id
         form.title.data = task.title
         form.contact.data = task.contact
         form.current_estimate.data = task.current_estimate
+    else:
+        form.assigned_to.data = current_user.get_id()
 
     return render_template('task.html',
                            task=task,
