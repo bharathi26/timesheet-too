@@ -1,7 +1,15 @@
 {{ form.csrf_token }}
 {{ form.id() }}
 <div class="task_side">
-    <div class="task_id">{% if task %}<a href="{{ url_for('.task') }}?id={{ task.id }}">{{ task.id }}</a>{% endif %}</div>
+    <div class="task_id">
+        {% if task %}
+        <a href="{{ url_for('.task') }}?id={{ task.id }}">{{ task.id }}</a>
+        <div>
+            <a href="{{ url_for('.task') }}?id={{ task.id - 1 }}">&lt;==</a>
+            <a href="{{ url_for('.task') }}?id={{ task.id + 1 }}">==&gt;</a>
+        </div>
+        {% endif %}
+    </div>
     <span class="contact">
     {{ form.contact.label() }}<br />
     {{ form.contact(size=13) }}<span class="errors"></span>

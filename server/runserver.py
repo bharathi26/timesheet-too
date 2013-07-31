@@ -72,8 +72,8 @@ def tasks(id):
                                         for p in models.list_projects())
     form.assigned_to.choices = tuple((u.username, u.fullname) 
                                         for u in models.list_users())
-    form.type.choices = models.list_task_types()
-    form.status.choices = models.list_status_types()
+    form.type.choices = app.config.get('TASK_TYPES') or models.list_task_types()
+    form.status.choices = app.config.get('STATUSES') or models.list_status_types()
     if id is None:
         if request.method == 'POST':
             task = models.add_task(form.title.data,
@@ -122,8 +122,8 @@ def task():
                                         for p in models.list_projects())
     form.assigned_to.choices = tuple((u.username, u.fullname) 
                                         for u in models.list_users())
-    form.type.choices = models.list_task_types()
-    form.status.choices = models.list_status_types()
+    form.type.choices = app.config.get('TASK_TYPES') or models.list_task_types()
+    form.status.choices = app.config.get('STATUSES') or models.list_status_types()
     task = models.get_task(request.args.get('id'))
     if task is not None:
         form.status.default = task.status
