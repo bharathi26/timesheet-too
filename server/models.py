@@ -73,6 +73,10 @@ class Task(Base):
         return "<Task {} - {}>".format(self.proj_id, self.title)
 
 
+    def __lt__(self, other):
+        return self.id < other.id
+
+
     def hours_spent_by_user(self, username, start=None, end=None):
         log.debug("%s %s", start, end)
         if start is None or end is None:
@@ -85,6 +89,16 @@ class Task(Base):
     @property
     def time_spent(self):
         return sum(i.hours_spent for i in self.intervals)
+
+
+    @property
+    def time_left(self):
+        time_left = (self.current_estimate or 0.0) - self.time_spent
+
+        # TODO: 'closed' will not be reliable if the host gives different status
+        if time_left < 0 and 'closed' in self.status.lower():
+            return 0
+        return time_left
 
 
 class Comment(Base):

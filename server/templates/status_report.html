@@ -8,6 +8,28 @@
 <a href="{{ url_for('.status_report', start=start.date(), end=end.date()-span) }}">&lt;--</a> 
 {{ end.date() }} <a href="{{ url_for('.status_report', start=start.date(), end=end.date()+span) }}">--&gt;</a> 
 </div>
+
+<table border="1" style="empty-cells: hide;">
+    <tr>
+        <th>Project</th>
+        <th>Task ID</th>
+        <th>Hours Spent</th>
+        <th>Hours Left</th>
+    </tr>
+    {% for project in report %}
+    <tr><td>{{ project.id }} - {{ project.name }}</td></td></tr>
+    {% for task in report[project]|sort %}
+    <tr>
+        <td></td>
+        <td><a href="{{ url_for('.task') }}?id={{ task.id }}">{{ task.id }}</a></td>
+        <td style="background: #eee; color: blue;">{{ "{:.2f} hrs".format(task.hours_spent_by_user(current_user.get_id(), start, end)) }}</td>
+        <td style="background: #eee;{% if task.time_left < 0 %}color: red;{% endif %}">{{ "{:.2f} hrs".format(task.time_left) }}</td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+</table>
+
+
 <div>
     <ul>
     {% for project in report %}
@@ -25,4 +47,5 @@
     {% endfor %}
     </ul>
 </div>
+
 {% endblock %}
