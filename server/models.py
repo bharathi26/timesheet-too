@@ -288,7 +288,7 @@ def update_task(id, proj_id, title, type, status, assigned_to, contact, comment,
     if comment:
         comment = Comment(id, comment, datetime.datetime.now(), user.username)
         session.add(comment)
-    if estimate:
+    if estimate is not None:
         task.current_estimate = estimate
         task.original_estimate = task.original_estimate or estimate
     task.proj_id = proj_id
