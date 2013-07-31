@@ -78,6 +78,7 @@
     .task_main .comments .comment {
         border-bottom: 2px #ccc solid;
         white-space: pre-line;
+        overflow: auto;
     }
 
     .task_main .comments .author {
@@ -90,7 +91,11 @@
 {% block content %}
 
 <div class="edit_task">
+    {% if task %}
     <form action="{{ url_for('.tasks', id=task.id) }}" method="POST">
+    {% else %}
+    <form action="{{ url_for('.tasks') }}" method="POST">
+    {% endif %}
         {% include 'forms/task.html' %}
         <div style='text-align: right; margin-right: 1em; clear: both;'>
             <input type="submit" value="OK" />
@@ -98,5 +103,9 @@
         </div>
     </form>
 </div>
+
+<script type="text/javascript">
+    document.getElementById('project').focus();
+</script>
 
 {% endblock %}
