@@ -102,17 +102,7 @@ def tasks(id):
                                      form.comment.data,
                                      form.current_estimate.data,
                                      current_user))
-        task = models.get_task(id)
-        form.assigned_to.data = current_user.username
-        form.status.default = task.status
-        form.type.default = task.type
-        form.project.default = task.project.id
-        form.process()
-        form.id.data = task.id
-        form.title.data = task.title
-        form.contact.data = task.contact
-        form.current_estimate.data = task.current_estimate
-        return render_template('task.html', task=task, form=form)
+        return redirect(request.args.get('next') or url_for('.task')+'?id='+id)
 
 
 @boog_slayer.route('/task', methods=['GET', 'POST'])

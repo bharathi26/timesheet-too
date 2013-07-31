@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 <header><h1>Tasks</h1></header>
-<a href="{{ url_for('.task') }}">New Task</a>
 
 <div>
     <table border="1">
@@ -31,9 +30,4 @@
     {% endfor %}
     </table>
 </div>
-<script>
-    function show_new_task(){
-        document.getElementById('new_task').style.display = 'block';
-    }
-</script>
 {% endblock %}
