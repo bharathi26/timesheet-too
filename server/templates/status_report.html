@@ -13,6 +13,7 @@
     <tr>
         <th>Project</th>
         <th>Task ID</th>
+        <th>Task Title</th>
         <th>Hours Spent</th>
         <th>Hours Left</th>
     </tr>
@@ -22,6 +23,7 @@
     <tr>
         <td></td>
         <td><a href="{{ url_for('.task') }}?id={{ task.id }}">{{ task.id }}</a></td>
+        <td>{{ task.title }}</td>
         <td style="background: #eee; color: blue;">{{ "{:.2f} hrs".format(task.hours_spent_by_user(current_user.get_id(), start, end)) }}</td>
         <td style="background: #eee;{% if task.time_left < 0 %}color: red;{% endif %}">{{ "{:.2f} hrs".format(task.time_left) }}</td>
     </tr>
