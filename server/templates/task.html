@@ -13,6 +13,7 @@
         margin-top: 2em;
         border: thin black solid;
         border-radius: 3px;
+        background-color: #eee;
     }
 
     div.task_side {
@@ -53,6 +54,11 @@
         float: left;
     }
 
+    input, select, textarea {
+        background-color: #eef;
+        color: #005;
+    }
+
     .task_main .title {
         clear: both;
         display: block;
@@ -80,8 +86,18 @@
     }
 
     .task_main .comments .comment {
-        border-bottom: 2px #ccc solid;
-        white-space: pre-line;
+        border: 2px #ccc solid;
+        border-radius: 3px;
+        padding: 0.5em;
+        margin-top: 0.2em;
+        max-height: 20em;
+        background-color: #eee;
+    }
+
+    .task_main .comments .comment .comment_text {
+        max-height: 20em;
+        border-bottom: thin #ccc solid;
+        white-space: pre;
         overflow: auto;
     }
 

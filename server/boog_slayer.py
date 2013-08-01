@@ -1,16 +1,21 @@
 import os
 import sys
-import models
-import forms
 import datetime
+from . import models
+from .forms import task as task_form
+from .forms import project as project_form
+from .forms import login as login_form
 from flask import Flask
-from flask import Blueprint, render_template, url_for, redirect, flash, request
+from flask import Blueprint, render_template, url_for, redirect, flash, \
+                  request, current_app
+
 from flask.ext.login import LoginManager, current_user, login_user, \
                             logout_user, login_required
 import logging
 log = logging.getLogger('boog_slayer')
 
 boog_slayer = Blueprint('boog_slayer', __name__, template_folder='templates')
+boog_slayer.name = __name__
 
 
 @boog_slayer.route('/')
@@ -47,7 +52,7 @@ def status_report(start, end):
 
 @boog_slayer.route('/projects', methods=['GET', 'POST'])
 def projects():
-    form = forms.project.ProjectForm()
+    form = project_form.ProjectForm()
     if form.validate_on_submit():
         proj = models.add_project(form.id.data,
                                   form.name.data,
@@ -67,13 +72,13 @@ def projects():
 @boog_slayer.route('/tasks', methods=['GET', 'POST'], defaults={'id':None})
 @boog_slayer.route('/tasks/<id>', methods=['GET', 'POST'])
 def tasks(id):
-    form = forms.task.TaskForm()
+    form = task_form.TaskForm()
     form.project.choices = tuple((p.id, '{} - {}'.format(p.name, p.id))
                                         for p in models.list_projects())
     form.assigned_to.choices = tuple((u.username, u.fullname) 
                                         for u in models.list_users())
-    form.type.choices = app.config.get('TASK_TYPES') or models.list_task_types()
-    form.status.choices = app.config.get('STATUSES') or models.list_status_types()
+    form.type.choices = current_app.config.get('TASK_TYPES') or models.list_task_types()
+    form.status.choices = current_app.config.get('STATUSES') or models.list_status_types()
     if id is None:
         if request.method == 'POST':
             task = models.add_task(form.title.data,
@@ -86,8 +91,11 @@ def tasks(id):
                                    form.current_estimate.data,
                                    current_user)
             flash('Added task {}'.format(task))
+            
+            return redirect(request.args.get('next') 
+                         or url_for('.task')+'?id='+str(task.id))
         return render_template('tasks.html',
-                               tasks=models.list_tasks(),
+                               tasks=models.list_tasks(current_user.get_id()),
                                form=form,
                                )
     else:
@@ -107,13 +115,13 @@ def tasks(id):
 
 @boog_slayer.route('/task', methods=['GET', 'POST'])
 def task():
-    form = forms.task.TaskForm()
+    form = task_form.TaskForm()
     form.project.choices = tuple((p.id, '{} - {}'.format(p.name, p.id))
                                         for p in models.list_projects())
     form.assigned_to.choices = tuple((u.username, u.fullname) 
                                         for u in models.list_users())
-    form.type.choices = app.config.get('TASK_TYPES') or models.list_task_types()
-    form.status.choices = app.config.get('STATUSES') or models.list_status_types()
+    form.type.choices = current_app.config.get('TASK_TYPES') or models.list_task_types()
+    form.status.choices = current_app.config.get('STATUSES') or models.list_status_types()
     task = models.get_task(request.args.get('id'))
     if task is not None:
         form.status.default = task.status
@@ -154,7 +162,7 @@ def stop_work(id):
 
 @boog_slayer.route('/login', methods=['GET', 'POST'])
 def login():
-    form = forms.login.LoginForm()
+    form = login_form.LoginForm()
     if current_user.is_authenticated():
         flash("Already logged in")
         return redirect(url_for('.main'))
