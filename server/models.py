@@ -78,7 +78,6 @@ class Task(Base):
 
 
     def hours_spent_by_user(self, username, start=None, end=None):
-        log.debug("%s %s", start, end)
         if start is None or end is None:
             return sum(i.hours_spent for i in self.intervals if i.username == username)
         else:
@@ -176,9 +175,6 @@ class Interval(Base):
             self.end = start
                 
         end = self.end if end > (self.end or datetime.datetime.now()) else end
-        log.debug('Start: %s', start)
-        log.debug('End: %s', end)
-        log.debug("%s %s", self.start, self.end)
         return self.hours_spent
 
 
@@ -443,10 +439,19 @@ def list_task_types():
 def list_status_types():
     return (('New','New'),
             ('In Progress','In Progress'),
-            ('Closed - Complete','Closed - Complete'),
-            ('Closed - Duplicate','Closed - Duplicate'),
-            ("Closed - Won't fix","Closed - Won't fix"),
+            ('Closed','Closed'),
+            ('Resolved - Complete','Resolved - Complete'),
+            ('Resolved - Duplicate','Resolved - Duplicate'),
+            ("Resolved - Won't fix","Resolved - Won't fix"),
            )
+
+
+def get_status(action):
+    types = list_status_types()
+    for t in types:
+        if t[0].lower().startswith(action.lower()):
+            return t[0]
+    return types[0][0]
 
 
 Base.metadata.create_all(engine)

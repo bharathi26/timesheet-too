@@ -1,12 +1,18 @@
-{% extends 'base.html' %}
-{% block style %}
+{% extends 'boog_base.html' %}
+{% block styles %}
 <style type="text/css">
 
     div {
         /*border: thin black dashed;*/
     }
 
-    div.edit_task {
+    div.task_editbar {
+        clear: both;
+        text-align: right;
+        margin-right: 1em;
+    }
+
+    div.edit_task, .view_task {
         width: 600px;
         margin-left: auto;
         margin-right: auto;
@@ -110,22 +116,47 @@
 
 {% block content %}
 
+{% if mode == 'edit' %}
 <div class="edit_task">
+    <div>
     {% if task %}
-    <form action="{{ url_for('.tasks', id=task.id) }}" method="POST">
+    <form action="{{ url_for('.tasks', id=task.id) }}" method="POST" id='task_form'>
     {% else %}
-    <form action="{{ url_for('.tasks') }}" method="POST">
+    <form action="{{ url_for('.tasks') }}" method="POST" id='task_form'>
     {% endif %}
         {% include 'forms/task.html' %}
         <div style='text-align: right; margin-right: 1em; clear: both;'>
-            <input type="submit" value="OK" />
-            <input type="reset" value="Cancel" />
+            <input type="submit" value="OK" onclick="(function(){ submitting=true; })()"/>
         </div>
     </form>
 </div>
 
 <script type="text/javascript">
+    var submitting = false;
+    function has_edits(){
+        var form = document.getElementById('task_form');
+        if (form.project.value == "{{ form.project.data }}"
+                && form.type.value == "{{ form.type.data }}"
+                && form.status.value == "{{ form.status.data }}"
+                && form.assigned_to.value == "{{ form.assigned_to.data }}"
+                && form.title.value == "{{ form.title.data }}"
+                && form.comment.value == ""){
+            return false;
+        }
+        return true;
+    }
+
+    function really_close(){
+        if (!submitting && has_edits()){
+            return "You have unsaved edits - discard edits?";
+        }
+    }
+
     document.getElementById('project').focus();
+    window.onbeforeunload = really_close;
 </script>
+{% else %}
+    {% include 'views/task.html' %}
+{% endif %}
 
 {% endblock %}

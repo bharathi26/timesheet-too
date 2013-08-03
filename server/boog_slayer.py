@@ -124,7 +124,10 @@ def task():
     form.status.choices = current_app.config.get('STATUSES') or models.list_status_types()
     task = models.get_task(request.args.get('id'))
     if task is not None:
-        form.status.default = task.status
+        if request.args.get('action') is None:
+            form.status.default = task.status
+        else:
+            form.status.default = models.get_status(request.args.get('action'))
         form.type.default = task.type
         form.project.default = task.project.id
         form.process()
@@ -139,7 +142,7 @@ def task():
     return render_template('task.html',
                            task=task,
                            form=form,
-                           mode=request.args.get('mode'))
+                           mode=request.args.get('mode') or 'view')
 
 
 @boog_slayer.route('/start_work/<id>')

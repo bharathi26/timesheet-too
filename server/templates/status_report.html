@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'boog_base.html' %}
 {% block content %}
 <div>
 <a href="{{ url_for('.status_report', start=start.date()-span, end=end.date()) }}">&lt;--</a> Start: {{ start.date() }}

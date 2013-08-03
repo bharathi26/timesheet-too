@@ -1,0 +1,11 @@
+<div class="task_editbar">
+    <a href="{{ url_for('.task') }}?id={{ task.id }}&mode=edit">Edit</a>
+    {% if current_user.current_task.id == task.id %}
+  | <a href="{{ url_for('.stop_work', id=task.id) }}">Stop Work</a>
+    {% else %}
+  | <a href="{{ url_for('.start_work', id=task.id) }}">Start Work</a>
+    {% endif %}
+  | <a href="{{ url_for('.task') }}?id={{ task.id }}&mode=edit&action=close">Close</a>
+  | <a href="{{ url_for('.task') }}?id={{ task.id }}&mode=edit&action=resolve">Resolve</a>
+
+</div>
