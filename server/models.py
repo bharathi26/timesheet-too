@@ -315,8 +315,13 @@ def get_task(id):
     return session.query(Task).filter_by(id=id).first()
 
 
-def list_tasks(username):
-    tasks = session.query(Task).filter(getattr(Task, 'assigned_to')==username).all()
+def list_tasks(filter_=None):
+    if filter_:
+        attr, value = filter_.split('=')
+        #tasks = session.query(Task).filter(getattr(Task, attr)==value).all()
+        tasks = session.query(Task).filter(getattr(getattr(Task, attr), '__eq__')(value)).all()
+    else:
+        tasks = session.query(Task).all()
     return tasks
 
 
