@@ -11,7 +11,7 @@
 
 {% block nav %}
 <a href="{{ url_for('.main') }}">Home</a> |
-<a href="{{ url_for('.task') }}">New Task</a> |
+<a href="{{ url_for('.task') }}?mode=edit">New Task</a> |
 <a href="{{ url_for('.projects') }}">Projects</a> |
 <a href="{{ url_for('.tasks') }}">Tasks</a>
 {% if current_user.is_authenticated() %}
