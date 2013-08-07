@@ -395,7 +395,7 @@ def update_times(date, form, username):
 
 def get_status_report(user, start, end):
     intervals = session.query(Interval) \
-                       .filter(Interval.username == user.username) \
+                       .filter(Interval.username == user.get_id()) \
                        .filter(Interval.start >= start) \
                        .filter(or_(Interval.end <= end, Interval.end == None)) \
                        .order_by(Interval.start) \

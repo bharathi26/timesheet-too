@@ -95,7 +95,7 @@ def tasks(id):
             return redirect(request.args.get('next') 
                          or url_for('.task')+'?id='+str(task.id))
         return render_template('tasks.html',
-                               tasks=models.list_tasks(current_user.get_id()),
+                               tasks=models.list_tasks(request.args.get('filter')),
                                form=form,
                                )
     else:
