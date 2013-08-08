@@ -1,8 +1,9 @@
-import datetime
+from datetime import datetime, timedelta
 import logging 
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey,\
-                       Float, DateTime, or_
+                       Float, DateTime, or_, select, func
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from flask import flash
@@ -85,9 +86,16 @@ class Task(Base):
                             for i in self.intervals if i.username == username)
 
 
-    @property
+    @hybrid_property
     def time_spent(self):
-        return sum(i.hours_spent for i in self.intervals)
+        return sum((i.time_spent for i in self.intervals), timedelta(0))
+
+
+    @time_spent.expression
+    def hours_spent(cls):
+        return (select([func.sum(Interval.time_spent)])
+                .where(cls.id==Interval.task_id)
+                .label('time_spent'))
 
 
     @property
@@ -155,12 +163,22 @@ class Interval(Base):
 
     @property
     def hours_spent(self):
-        end = self.end or datetime.datetime.now()
+        end = self.end or datetime.now()
         return (end - self.start).total_seconds()/60/60
 
 
+    @hybrid_property
+    def time_spent(self):
+        return (self.end or datetime.now()) - self.start
+
+
+    @time_spent.expression
+    def time_spent(cls):
+        return func.coalesce(cls.end, func.current_timestamp()) - cls.start
+
+
     def hours_spent_between(self, start, end):
-        now = datetime.datetime.now()
+        now = datetime.now()
         # Pick the latest start time
         if self.start < start:
             self.start = start
@@ -174,7 +192,7 @@ class Interval(Base):
         if self.end < start:
             self.end = start
                 
-        end = self.end if end > (self.end or datetime.datetime.now()) else end
+        end = self.end if end > (self.end or datetime.now()) else end
         return self.hours_spent
 
 
@@ -285,7 +303,7 @@ def add_task(title, type, status, proj_id, assigned_to, contact, desc, estimate,
     session.add(task)
     session.commit()
     if desc:
-        comment = Comment(task.id, desc, datetime.datetime.now(), user.username)
+        comment = Comment(task.id, desc, datetime.now(), user.username)
         session.add(comment)
     session.commit()
     return task
@@ -296,7 +314,7 @@ def update_task(id, proj_id, title, type, status, assigned_to, contact, comment,
     if task is None:
         return "No task with id {}".format(id)
     if comment:
-        comment = Comment(id, comment, datetime.datetime.now(), user.username)
+        comment = Comment(id, comment, datetime.now(), user.username)
         session.add(comment)
     if estimate is not None:
         task.current_estimate = estimate
@@ -315,11 +333,26 @@ def get_task(id):
     return session.query(Task).filter_by(id=id).first()
 
 
+def operator_split(value):
+    opers = (('!=', "__ne__"),
+             ('>', "__gt__"),
+             ('<', "__lt__"),
+             ('=', "__eq__"),
+            )
+    for operator in opers:
+        if operator[0] in value:
+            attr, value = value.split(operator[0])
+            return operator[1], attr, value
+    return value
+
+
 def list_tasks(filter_=None):
     if filter_:
-        attr, value = filter_.split('=')
-        #tasks = session.query(Task).filter(getattr(Task, attr)==value).all()
-        tasks = session.query(Task).filter(getattr(getattr(Task, attr), '__eq__')(value)).all()
+        tasks = session.query(Task)
+        for filter_ in filter_.split('&'):
+            oper, attr, value = operator_split(filter_)
+            tasks = tasks.filter(getattr(getattr(Task, attr), oper)(value))
+        return tasks.all()
     else:
         tasks = session.query(Task).all()
     return tasks
@@ -329,7 +362,7 @@ def stop_work(id, username):
     interval = session.query(Interval).filter_by(task_id=id,
                                                  username=username,
                                                  end=None).first()
-    interval.end = datetime.datetime.now()
+    interval.end = datetime.now()
     session.add(interval)
     session.commit()
     return interval
@@ -341,7 +374,7 @@ def start_work(id, username):
     task = session.query(Task).filter_by(id=id).one()
     task.status = 'In Progress'
     session.add(task)
-    interval = Interval(id, username, datetime.datetime.now())
+    interval = Interval(id, username, datetime.now())
     if previous:
         previous.end = interval.start
         session.add(previous)
@@ -351,8 +384,8 @@ def start_work(id, username):
 
 
 def timesheet(date, user):
-    morning = datetime.datetime(date.year, date.month, date.day, 0, 0, 0)
-    evening = datetime.datetime(date.year, date.month, date.day, 23, 59, 59)
+    morning = datetime(date.year, date.month, date.day, 0, 0, 0)
+    evening = datetime(date.year, date.month, date.day, 23, 59, 59)
     return session.query(Interval).filter(Interval.username == user.username) \
                                   .filter(Interval.start >= morning) \
                                   .filter(Interval.start <= evening) \
@@ -373,13 +406,13 @@ def update_times(date, form, username):
             interval = Interval(task_id, username, start, end)
             session.add(interval)
             changes.add(interval)
-        start = datetime.datetime.strptime(start, "%I:%M %p").replace(
+        start = datetime.strptime(start, "%I:%M %p").replace(
                                                             year=date.year,
                                                             month=date.month,
                                                             day=date.day)
 
         if end:
-            end = datetime.datetime.strptime(end, "%I:%M %p").replace(
+            end = datetime.strptime(end, "%I:%M %p").replace(
                                                             year=date.year,
                                                             month=date.month,
                                                             day=date.day)
