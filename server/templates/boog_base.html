@@ -20,7 +20,7 @@
 | Current Task:
     {% if current_user.current_task %}
         <a href="{{ url_for('.tasks', id=current_user.current_task.id) }}">{{ current_user.current_task.id }}</a>
-        - <a href="{{ url_for('.stop_work', id=current_user.current_task.id) }}?next={{ request.path }}">Stop Work</a>
+        - <a href="{{ url_for('.stop_work', id=current_user.current_task.id) }}">Stop Work</a>
     {% else %}
         None
     {% endif %}

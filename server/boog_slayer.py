@@ -160,7 +160,7 @@ def start_work(id):
 def stop_work(id):
     task = models.stop_work(id, current_user.username)
     flash("Stopped work on {}".format(task))
-    return redirect(request.args.get('next') or url_for('.tasks', id=id))
+    return redirect(request.args.get('next') or url_for('.tasks', id=None))
 
 
 @boog_slayer.route('/login', methods=['GET', 'POST'])
