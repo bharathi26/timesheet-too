@@ -1,9 +1,11 @@
 ## FIXME: could not find svn URL in dependency_links for this package:
 Flask==0.10-dev-20130719
 Flask-Login==0.2.6
+Flask-Markdown==0.3
 Flask-WTF==0.8.4
 Jinja2==2.7
 Mako==0.8.1
+Markdown==2.3.1
 MarkupSafe==0.18
 PyYAML==3.10
 SQLAlchemy==0.8.2

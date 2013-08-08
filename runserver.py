@@ -3,6 +3,7 @@ import logging
 import server.boog_slayer
 from flask import Flask
 from flask.ext.login import LoginManager
+from flaskext.markdown import Markdown
 log = logging.getLogger('boog_slayer')
 handler = logging.StreamHandler()
 log.setLevel(logging.DEBUG)
@@ -42,6 +43,7 @@ class ReverseProxied(object):
         return self.app(environ, start_response)
 
 app = Flask(__name__)
+Markdown(app)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 app.register_blueprint(server.boog_slayer.boog_slayer)
 app.secret_key = 'This should be something different'.encode()

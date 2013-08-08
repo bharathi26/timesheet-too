@@ -52,7 +52,7 @@
             {% if task %}
             {% for comment in task.comments %}
             <div class="comment">
-                <div class="comment_text">{{ comment.text }}</div>
+                <div class="comment_text">{{ comment.text|markdown }}</div>
                 <div class="footer">
                 {{ comment.timestamp.strftime("%Y-%m-%d %I:%M %p") }} - <div class="author">{{ comment.user.fullname }}</div>
                 </div>
