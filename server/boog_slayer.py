@@ -29,17 +29,26 @@ def main():
 def status_report(start, end):
     offset = 3 - datetime.date.today().weekday()
     if end is None:
-        end = datetime.datetime.today() + datetime.timedelta(offset)
+        end = datetime.datetime.today().replace(hour=23,
+                                                minute=59,
+                                                second=59,
+                                                microsecond=999999) + \
+              datetime.timedelta(offset)
     else:
         end = datetime.datetime.strptime(str(end)[:10],
-                                         "%Y-%m-%d").replace(hour=23,
-                                                             minute=59)
+                                        "%Y-%m-%d").replace(hour=23,
+                                                            minute=59,
+                                                            second=59,
+                                                            microsecond=999999)
     if start is None:
-        start = end - datetime.timedelta(6)
+        start = end.replace(hour=0,
+                            minute=0,
+                            second=0,
+                            microsecond=0) - datetime.timedelta(6)
     else:
         start = datetime.datetime.strptime(str(start)[:10], "%Y-%m-%d")
     
-    log.debug("{} {}".format(start.date(), end.date()))
+
     return render_template('status_report.html',
                            report=models.get_status_report(current_user,
                                                            start,

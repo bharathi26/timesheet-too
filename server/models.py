@@ -80,9 +80,9 @@ class Task(Base):
 
     def hours_spent_by_user(self, username, start=None, end=None):
         if start is None or end is None:
-            return sum(i.hours_spent for i in self.intervals if i.username == username)
+            return sum(i.time_spent for i in self.intervals if i.username == username)
         else:
-            return sum(i.hours_spent_between(start, end)
+            return sum(i.time_spent_between(start, end)
                             for i in self.intervals if i.username == username)
 
 
@@ -92,7 +92,7 @@ class Task(Base):
 
 
     @time_spent.expression
-    def hours_spent(cls):
+    def time_spent(cls):
         return (select([func.sum(Interval.time_spent)])
                 .where(cls.id==Interval.task_id)
                 .label('time_spent'))
@@ -174,26 +174,27 @@ class Interval(Base):
 
     @time_spent.expression
     def time_spent(cls):
-        return func.coalesce(cls.end, func.current_timestamp()) - cls.start
+        return func.julianday(func.coalesce(cls.end,
+                                            func.current_timestamp())) - \
+               func.julianday(cls.start)
 
 
     def hours_spent_between(self, start, end):
         now = datetime.now()
-        # Pick the latest start time
-        if self.start < start:
-            self.start = start
-        # Earliest end time
-        if self.end is None:
-            if now < end:
-                self.end = now
-            else:
-                self.end = end
 
-        if self.end < start:
-            self.end = start
+        # Pick the latest start time
+        if self.start > start:
+            start = self.start
+
+        # Earliest end time
+        if (self.end or now) < end:
+            end = self.end or now
+
+        # If we end before we start, let's just end when we start
+        if end < start:
+            end = start
                 
-        end = self.end if end > (self.end or datetime.now()) else end
-        return self.hours_spent
+        return end - start
 
 
 class User(Base):
@@ -351,7 +352,11 @@ def list_tasks(filter_=None):
         tasks = session.query(Task)
         for filter_ in filter_.split('&'):
             oper, attr, value = operator_split(filter_)
+            if attr == 'time_spent':
+                value = timedelta(hours=float(value)).total_seconds()/60/60/24
+                log.debug(value)
             tasks = tasks.filter(getattr(getattr(Task, attr), oper)(value))
+            log.debug(tasks)
         return tasks.all()
     else:
         tasks = session.query(Task).all()

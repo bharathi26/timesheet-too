@@ -24,30 +24,11 @@
         <td></td>
         <td><a href="{{ url_for('.task') }}?id={{ task.id }}">{{ task.id }}</a></td>
         <td>{{ task.title }}</td>
-        <td style="background: #eee; color: blue;">{{ "{:.2f} hrs".format(task.hours_spent_by_user(current_user.get_id(), start, end)) }}</td>
-        <td style="background: #eee;{% if task.time_left < 0 %}color: red;{% endif %}">{{ "{:.2f} hrs".format(task.time_left) }}</td>
+        <td style="background: #eee; color: blue;">{{ "{:.2f} hrs".format(task.hours_spent_by_user(current_user.get_id(), start, end).total_seconds()/60/60) }}</td>
+        <td style="background: #eee;{% if task.time_left < 0 %}color: red;{% endif %}">{{ "{:.2f} hrs".format(task.time_left.total_seconds()/60/60) }}</td>
     </tr>
     {% endfor %}
     {% endfor %}
 </table>
-
-
-<div>
-    <ul>
-    {% for project in report %}
-        <li>{{ project.id }} - {{ project.name }}</li>
-        <ul>
-            {% for task in report[project] %}
-                <li>{{ task.id }} - {{ task.title }} - {{ "{:.2f} hrs".format(task.hours_spent_by_user(current_user.username, start, end)) }}</li>
-                <ul>
-                {% for comment in task.comments %}
-                <li>{{ comment.timestamp.strftime("%Y-%m-%d %I:%M %p")  }} - {{ comment.text }} - {{ comment.author }}</li>
-                {% endfor %}
-                </ul>
-            {% endfor %}
-        </ul>
-    {% endfor %}
-    </ul>
-</div>
 
 {% endblock %}

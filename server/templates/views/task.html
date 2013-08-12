@@ -26,6 +26,10 @@
             None
             {% endif %}
         </span>
+        <span class="time_spent">
+            Time Spent:
+            {{ "{:.2f}".format(task.time_spent.total_seconds()/60/60) }}
+        </span>
     </div>
     <div class="task_main">
         <span class="project">
