@@ -4,9 +4,13 @@
 
 <div>
     <form action="{{ url_for('.tasks') }}" method="GET">
-        Filter: <input type="text" name="filter" size="30" />
+        Filter: <input type="text" name="filter" size="30" value="{{ current_filter or 'None' }}"/>
         <input type="submit" value="Filter" />
     </form>
+    Recent filters: <br />
+    {% for filter_ in recent_filters %}
+    <a href="{{ url_for('.tasks') }}?filter={{ filter_|urlencode }}">{{ filter_ or 'None' }}</a><br />
+    {% endfor %}
     <table border="1">
         <tr>
             <th>ID</th>

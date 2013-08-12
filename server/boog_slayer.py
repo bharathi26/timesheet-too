@@ -7,7 +7,7 @@ from .forms import project as project_form
 from .forms import login as login_form
 from flask import Flask
 from flask import Blueprint, render_template, url_for, redirect, flash, \
-                  request, current_app
+                  request, current_app, session
 
 from flask.ext.login import LoginManager, current_user, login_user, \
                             logout_user, login_required
@@ -79,6 +79,13 @@ def tasks(id):
                                         for u in models.list_users())
     form.type.choices = current_app.config.get('TASK_TYPES') or models.list_task_types()
     form.status.choices = current_app.config.get('STATUSES') or models.list_status_types()
+    session['filter'] = request.args.get('filter', session.get('filter'))
+    filters = session.get('recent_filters', [])
+    try:
+        filters.insert(0, filters.pop(filters.index(session['filter'])))
+    except ValueError:
+        filters.insert(0, session['filter'])
+    session['recent_filters'] = filters[:5]
     if id is None:
         if request.method == 'POST':
             task = models.add_task(form.title.data,
@@ -95,7 +102,9 @@ def tasks(id):
             return redirect(request.args.get('next') 
                          or url_for('.task')+'?id='+str(task.id))
         return render_template('tasks.html',
-                               tasks=models.list_tasks(request.args.get('filter')),
+                               tasks=models.list_tasks(session['filter']),
+                               recent_filters=session['recent_filters'],
+                               current_filter=session['filter'],
                                form=form,
                                )
     else:
