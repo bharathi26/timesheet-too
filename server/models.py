@@ -10,10 +10,20 @@ from flask import flash
 
 log = logging.getLogger('boog_slayer.models')
 
-engine = create_engine('sqlite:///timesheet.sq3')
+def set_dburi(uri):
+    global session
+    uri = uri or 'sqlite:///timesheet.sq3'
+    log.debug('Using %s for database', uri)
+    engine = create_engine(uri, echo=False)
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    return session
+
+
 Base = declarative_base()
-Session = sessionmaker(bind=engine)
-session = Session()
+Session = sessionmaker()
+session = set_dburi(None)
 
 
 class Project(Base):

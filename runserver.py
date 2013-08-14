@@ -42,19 +42,25 @@ class ReverseProxied(object):
             environ['wsgi.url_scheme'] = scheme
         return self.app(environ, start_response)
 
+from flask import Flask
+from flask.ext.login import LoginManager
+from flaskext.markdown import Markdown
 app = Flask(__name__)
+app.secret_key = 'This should be something different'.encode()
 Markdown(app)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
+
+import server.boog_slayer
 app.register_blueprint(server.boog_slayer.boog_slayer)
-app.secret_key = 'This should be something different'.encode()
 login_manager = LoginManager()
 login_manager.init_app(app)
+server.boog_slayer.models.set_dburi('sqlite:////home/wayne/programming/timesheet/sandbox/timesheet.sq3')
+
 
 @login_manager.user_loader
 def load_user(userid):
     return server.boog_slayer.models.get_user(userid)
 
 if __name__ == "__main__":
-
     port = int(os.environ.get('TASK_PORT') or 5000)
     app.run('0.0.0.0', port=port, debug=True)
