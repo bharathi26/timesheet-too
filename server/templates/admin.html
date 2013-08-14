@@ -1,0 +1,25 @@
+{% extends 'boog_base.html' %}
+
+{% block content %}
+<div class="projects">
+    <h1>Projects</h1>
+    <div class="add">
+        <h2>New Project</h2>
+        <form action="{{ url_for('.projects') }}">
+            {% set form = project_form %}
+            {% include 'forms/project.html' %}
+        </form>
+    <div>
+    <div class="list">
+        {% for project in projects %}
+            {{ project }}<a href="#">Edit</a><br />
+        {% endfor %}
+    </div>
+</div>
+<div class="users">
+    <h1>Users</h1>
+    {% for user in users %}
+    {{ user.get_id() }} - {{ user.fullname }}<a href="#">Edit</a><br />
+    {% endfor %}
+</div>
+{% endblock %}

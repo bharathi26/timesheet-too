@@ -131,6 +131,19 @@ def tasks(id):
         return redirect(request.args.get('next') or url_for('.task')+'?id='+id)
 
 
+@boog_slayer.route('/admin')
+@login_required
+def admin():
+    if not current_user.has_permission('ADMIN'):
+        return redirect(url_for('.main'))
+
+    return render_template('admin.html',
+                           project_form=project_form.ProjectForm(),
+                           users=models.list_users(),
+                           projects=models.list_projects(),
+                           )
+
+
 @boog_slayer.route('/task', methods=['GET', 'POST'])
 def task():
     form = task_form.TaskForm()

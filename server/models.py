@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 import logging 
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey,\
@@ -53,6 +54,17 @@ class Project(Base):
 
     def hours_spent_by_user(self, username):
         return sum(task.hours_spent_by_user(username) for task in self.tasks)
+
+
+class Permission(Base):
+    __tablename__ = 'permissions'
+
+    name = Column(String, primary_key=True)
+    user_name = Column(String, ForeignKey('users.username'))
+
+
+    def __repr__(self):
+        return "<Permission {} - User {}>".format(self.name, self.user_name)
 
 
 class Task(Base):
@@ -216,6 +228,7 @@ class User(Base):
     intervals = relationship("Interval", backref="user")
     assigned_tasks = relationship("Task", backref="user")
     comments = relationship("Comment", backref="user")
+    permissions = relationship("Permission", backref="user")
 
 
     def __init__(self, username, fullname, password):
@@ -272,6 +285,14 @@ class User(Base):
     def get_id(self):
         return self.username
 
+
+    def has_permission(self, permission):
+        for p in self.permissions:
+            if p.name == permission:
+                return True
+        return False
+
+
 def time_spent_on_project(proj_id, username):
     total = 0
     for i in session.query(Interval).filter_by(username=username):
@@ -288,8 +309,16 @@ def get_user(username):
     return session.query(User).filter_by(username=username).first()
 
 
+def get_usercount():
+    return session.query(func.count(User.username)).one()[0]
+
 def create_user(username, fullname, password):
     user = User(username, fullname, password)
+    usercount = get_usercount()
+    if usercount == 0:
+        permission = Permission('ADMIN', user)
+        user.permsissions.append(permission)
+        session.add(permission)
     session.add(user)
     session.commit()
     return user
@@ -507,4 +536,4 @@ def get_status(action):
     return types[0][0]
 
 
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
